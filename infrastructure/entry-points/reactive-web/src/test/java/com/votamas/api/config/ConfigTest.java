@@ -1,7 +1,7 @@
 package com.votamas.api.config;
 
-import com.votamas.api.Handler;
-import com.votamas.api.RouterRest;
+import com.votamas.api.AuthHandler;
+import com.votamas.api.AuthRouterRest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {

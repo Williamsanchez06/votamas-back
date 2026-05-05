@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-public class Handler {
+public class AuthHandler {
 //private  final UseCase useCase;
 //private  final UseCase2 useCase2;
 
