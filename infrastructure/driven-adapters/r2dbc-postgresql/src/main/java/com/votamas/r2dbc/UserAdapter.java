@@ -19,4 +19,10 @@ public class UserAdapter implements UserRepository {
         return repository.save(mapper.toUserData(user))
                 .map(mapper::toUser);
     }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return repository.findByEmail(email).map(mapper::toUser);
+    }
+
 }

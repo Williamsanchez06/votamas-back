@@ -16,16 +16,18 @@ public class JwtAdapter implements TokenGateway {
     private String secretKey;
 
     @Value("${jwt.expiration}")
-    private Date expiration;
+    private long expiration;
 
     @Override
     public String generateAccessToken(User user) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("userId", user.getId())
                 .setIssuedAt(new Date())
-                .setExpiration(expiration)
+                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
