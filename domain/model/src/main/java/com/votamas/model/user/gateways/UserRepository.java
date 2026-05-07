@@ -1,9 +1,10 @@
 package com.votamas.model.user.gateways;
 
 import com.votamas.model.user.User;
+import reactor.core.publisher.Mono;
 
 public interface UserRepository {
 
-    User findByEmail(String email);
+    Mono<User> save(User user);
 
 }

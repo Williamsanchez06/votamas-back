@@ -11,11 +11,9 @@ import java.time.Duration;
 
 @Configuration
 public class PostgreSQLConnectionPool {
-    /* Change these values for your project */
     public static final int INITIAL_SIZE = 12;
     public static final int MAX_SIZE = 15;
     public static final int MAX_IDLE_TIME = 30;
-    public static final int DEFAULT_PORT = 5432;
 
 	@Bean
 	public ConnectionPool getConnectionConfig(PostgresqlConnectionProperties properties) {

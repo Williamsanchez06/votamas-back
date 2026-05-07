@@ -29,3 +29,14 @@ management:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+adapters:
+  r2dbc:
+    host: "localhost"
+    port: 5432
+    database: "votamas"
+    schema: "vota_mas"
+    username: "postgres"
+    password: 12345
+jwt:
+  secret: PRUEBAWILLIAMREP
+  expiration: 86400000 # 1 day in milliseconds

@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':model')
+    implementation 'org.springframework:spring-context'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+}
