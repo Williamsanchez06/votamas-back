@@ -38,5 +38,8 @@ adapters:
     username: "postgres"
     password: 12345
 jwt:
-  secret: PRUEBAWILLIAMREP
+  secret: hh_clave_super_william_de_reppppp_32_232DFE
   expiration: 86400000 # 1 day in milliseconds
+entries:
+  reactive-web:
+    base-path-api: "/api/v1"

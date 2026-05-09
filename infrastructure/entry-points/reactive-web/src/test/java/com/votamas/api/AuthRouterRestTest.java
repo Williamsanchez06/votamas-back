@@ -1,5 +1,7 @@
 package com.votamas.api;
 
+import com.votamas.api.handlers.AuthHandler;
+import com.votamas.api.routers.AuthRouterRest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

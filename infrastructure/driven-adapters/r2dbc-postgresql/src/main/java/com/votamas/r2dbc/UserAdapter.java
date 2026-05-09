@@ -1,6 +1,6 @@
 package com.votamas.r2dbc;
 
-import com.votamas.model.user.User;
+import com.votamas.model.user.gateways.User;
 import com.votamas.model.user.gateways.UserRepository;
 import com.votamas.r2dbc.mapper.UserRepositoryMapper;
 import lombok.RequiredArgsConstructor;

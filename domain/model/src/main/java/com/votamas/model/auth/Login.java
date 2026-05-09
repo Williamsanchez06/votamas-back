@@ -1,9 +1,9 @@
 package com.votamas.model.auth;
 
-import lombok.Getter;
+import lombok.Builder;
 
-@Getter
-public class Login {
-    private String email;
-    private String password;
+@Builder
+public record Login(
+        String email, String password
+) {
 }
