@@ -1,0 +1,3 @@
+CREATE DATABASE votamas;
+
+CREATE SCHEMA IF NOT EXISTS vota_mas;
