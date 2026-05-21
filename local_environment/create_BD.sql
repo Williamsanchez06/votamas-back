@@ -5,16 +5,25 @@
 \echo '=========================================='
 
 DROP DATABASE IF EXISTS votamas WITH (FORCE);
-CREATE DATABASE votamas;
+
+CREATE DATABASE votamas
+    WITH
+    ENCODING = 'UTF8'
+    TEMPLATE template0;
 
 \connect votamas
+
+SET client_encoding = 'UTF8';
 
 \echo '=========================================='
 \echo 'CREANDO EXTENSIONES Y SCHEMAS'
 \echo '=========================================='
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE SCHEMA IF NOT EXISTS vota_mas;
+
+SET search_path TO vota_mas;
 
 \echo '=========================================='
 \echo 'CREANDO TABLAS'
