@@ -1,14 +1,14 @@
-create table vota_mas.role
+CREATE TABLE vota_mas.role
 (
-    role_id    uuid         not null,
-    created_at timestamp(6),
-    updated_at timestamp(6),
-    is_active  boolean      not null,
-    name       varchar(100) not null
+    role_id    UUID         NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP(6) NOT NULL DEFAULT now(),
+    is_active  BOOLEAN      NOT NULL,
+    name       VARCHAR(100) NOT NULL
 );
 
-create table vota_mas.user_role
+CREATE TABLE vota_mas.user_role
 (
-    user_id uuid not null,
-    role_id uuid not null
+    user_id UUID NOT NULL,
+    role_id UUID NOT NULL
 );

@@ -1,0 +1,65 @@
+INSERT INTO vota_mas.module (
+    module_order,
+    created_at,
+    updated_at,
+    module_id,
+    parent_id,
+    name,
+    route,
+    description,
+    primary_icon,
+    secondary_icon,
+    tertiary_icon
+) VALUES
+(
+    1,
+    now(),
+    now(),
+    '43eedff1-7cc0-4614-a4b2-dc0443d20c64',
+    null,
+    'Inicio',
+    'home',
+    'Visualiza un resumen general con métricas clave para toma de decisiones',
+    'icon-dashboard',
+    'icon-bar-chart',
+    'icon-pie-chart'
+),
+(
+    2,
+    now(),
+    now(),
+    'a5bc123b-d86f-4450-9e52-cb635af7c8a2',
+    null,
+    'Administración',
+    'administration',
+    'Módulo de administración del sistema',
+    'icon-settings',
+    'icon-tool',
+    'icon-shield'
+),
+(
+    3,
+    now(),
+    now(),
+    'f58bbc71-0082-414e-ba52-666427bce16e',
+    null,
+    'Roles',
+    'roles',
+    'Gestión de roles del sistema',
+    'icon-users',
+    'icon-lock',
+    'icon-key'
+),
+(
+    4,
+    now(),
+    now(),
+    'b71340e8-b44b-477f-8475-af42c580668b',
+    null,
+    'Usuarios',
+    'users',
+    'Gestión de usuarios del sistema',
+    'icon-user',
+    'icon-bar-chart',
+    'icon-pie-chart'
+);

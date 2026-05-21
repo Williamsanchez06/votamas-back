@@ -1,17 +1,17 @@
-alter table vota_mas.role
-    add constraint pk_role
-        primary key (role_id);
+ALTER TABLE vota_mas.role
+    ADD CONSTRAINT pk_role
+        PRIMARY KEY (role_id);
 
-alter table vota_mas.user_role
-    add constraint pk_user_role
-        primary key (user_id, role_id);
+ALTER TABLE vota_mas.user_role
+    ADD CONSTRAINT pk_user_role
+        PRIMARY KEY (user_id, role_id);
 
-alter table vota_mas.user_role
-    add constraint fk_user_role_user
-        foreign key (user_id)
-            references vota_mas."user"(user_id);
+ALTER TABLE vota_mas.user_role
+    ADD CONSTRAINT fk_user_role_user
+        FOREIGN KEY (user_id)
+            REFERENCES vota_mas.users(user_id);
 
-alter table vota_mas.user_role
-    add constraint fk_user_role_role
-        foreign key (role_id)
-            references vota_mas.role(role_id);
+ALTER TABLE vota_mas.user_role
+    ADD CONSTRAINT fk_user_role_role
+        FOREIGN KEY (role_id)
+            REFERENCES vota_mas.role(role_id);
