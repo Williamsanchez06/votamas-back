@@ -1,6 +1,6 @@
 package com.votamas.model.auth.gateways;
 
-public interface PasswordGateway {
+public interface PasswordRepository {
 
     boolean matches(String rawPassword, String encodedPassword);
 

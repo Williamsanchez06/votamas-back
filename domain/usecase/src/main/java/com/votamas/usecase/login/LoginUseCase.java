@@ -2,8 +2,8 @@ package com.votamas.usecase.login;
 
 import com.votamas.model.auth.Login;
 import com.votamas.model.auth.Token;
-import com.votamas.model.auth.gateways.PasswordGateway;
-import com.votamas.model.auth.gateways.TokenGateway;
+import com.votamas.model.auth.gateways.UserPermissionRepository;
+import com.votamas.model.auth.gateways.TokenRepository;
 import com.votamas.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -12,22 +12,22 @@ import reactor.core.publisher.Mono;
 public class LoginUseCase {
 
     private final UserRepository userRepository;
-    private final PasswordGateway passwordGateway;
-    private final TokenGateway tokenGateway;
+    private final UserPermissionRepository userPermissionRepository;
+    private final TokenRepository tokenGateway;
 
     public Mono<Token> execute(Login login) {
 
-        return userRepository.findByEmail(login.email()).switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado"))).flatMap(user -> {
-
-            boolean passwordOk = passwordGateway.matches(login.password(), user.password());
-
-            if (!passwordOk) {
-                return Mono.error(new RuntimeException("Credenciales inválidas"));
-            }
-
-            String accessToken = tokenGateway.generateAccessToken(user);
-
-            return Mono.just(new Token(accessToken));
-        });
+        return userRepository.findByEmail(login.email())
+                .switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado")))
+                .flatMap(user ->
+                        userPermissionRepository.findPermissionsByUserId(user.id())
+                                .collectList()
+                                .map(userPermissions -> {
+                                    String accessToken = tokenGateway.generateAccessToken(user, userPermissions);
+                                    return Token.builder()
+                                            .accessToken(accessToken)
+                                            .build();
+                                })
+                );
     }
 }

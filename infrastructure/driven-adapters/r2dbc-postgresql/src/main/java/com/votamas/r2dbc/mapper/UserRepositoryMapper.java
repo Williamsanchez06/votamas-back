@@ -1,6 +1,6 @@
 package com.votamas.r2dbc.mapper;
 
-import com.votamas.model.user.gateways.User;
+import com.votamas.model.user.User;
 import com.votamas.r2dbc.entities.UserData;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

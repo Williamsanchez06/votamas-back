@@ -1,4 +1,4 @@
-package com.votamas.model.user.gateways;
+package com.votamas.model.user;
 
 import lombok.Builder;
 
