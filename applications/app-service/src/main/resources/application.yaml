@@ -5,6 +5,14 @@ spring:
     name: "votamas"
   devtools:
     add-properties: false
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5433/votamas?currentSchema=vota_mas
+    username: postgres
+    password: 12345
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
   h2:
     console:
       enabled: true
@@ -18,6 +26,14 @@ spring:
     driverClassName: "org.h2.Driver"
   jpa:
     databasePlatform: "org.hibernate.dialect.H2Dialect"
+r2dbc:
+  url: r2dbc:postgresql://localhost:5433/votamas?currentSchema=vota_mas
+  username: postgres
+  password: 12345
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
 management:
   endpoints:
     web:
@@ -32,7 +48,7 @@ cors:
 adapters:
   r2dbc:
     host: "localhost"
-    port: 5432
+    port: 5433
     database: "votamas"
     schema: "vota_mas"
     username: "postgres"

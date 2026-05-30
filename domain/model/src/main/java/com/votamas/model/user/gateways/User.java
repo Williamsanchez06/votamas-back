@@ -11,5 +11,4 @@ public record User(
         String surname,
         String email,
         String password
-) {
-}
+) {}
