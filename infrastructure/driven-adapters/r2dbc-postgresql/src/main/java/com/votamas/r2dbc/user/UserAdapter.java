@@ -1,8 +1,8 @@
-package com.votamas.r2dbc;
+package com.votamas.r2dbc.user;
 
 import com.votamas.model.user.User;
 import com.votamas.model.user.gateways.UserRepository;
-import com.votamas.r2dbc.mapper.UserRepositoryMapper;
+import com.votamas.r2dbc.user.mapper.UserRepositoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;

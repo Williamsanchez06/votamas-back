@@ -1,6 +1,6 @@
-package com.votamas.r2dbc;
+package com.votamas.r2dbc.user;
 
-import com.votamas.r2dbc.entities.UserData;
+import com.votamas.r2dbc.user.entities.UserData;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 

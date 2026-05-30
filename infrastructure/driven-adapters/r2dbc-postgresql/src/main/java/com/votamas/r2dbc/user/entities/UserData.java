@@ -1,4 +1,4 @@
-package com.votamas.r2dbc.entities;
+package com.votamas.r2dbc.user.entities;
 
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
