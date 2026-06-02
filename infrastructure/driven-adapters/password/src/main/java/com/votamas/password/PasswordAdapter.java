@@ -11,7 +11,12 @@ public class PasswordAdapter implements PasswordRepository {
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
-    public boolean matches(String rawPassword, String encodedPassword) {
-        return encoder.matches(rawPassword, encodedPassword);
+    public String hash(String password) {
+        return encoder.encode(password);
+    }
+
+    @Override
+    public boolean matches(String rawPassword, String hashedPassword) {
+        return encoder.matches(rawPassword, hashedPassword);  // compara la contraseña cruda con la encriptada
     }
 }
