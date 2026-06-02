@@ -5,6 +5,7 @@ import com.votamas.model.auth.Token;
 import com.votamas.model.auth.gateways.PasswordGateway;
 import com.votamas.model.auth.gateways.TokenGateway;
 import com.votamas.model.user.gateways.UserRepository;
+import com.votamas.model.user.gateways.User;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -17,17 +18,26 @@ public class LoginUseCase {
 
     public Mono<Token> execute(Login login) {
 
-        return userRepository.findByEmail(login.email()).switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado"))).flatMap(user -> {
+        System.out.println("Intentando login para email: " + login.email());
 
-            boolean passwordOk = passwordGateway.matches(login.password(), user.password());
+        return userRepository.findByEmail(login.email())
+                .doOnNext(user -> System.out.println("Usuario encontrado en DB: " + user.email()))
+                .switchIfEmpty(Mono.defer(() -> {
+                    System.out.println("Usuario no encontrado en la base de datos");
+                    return Mono.error(new RuntimeException("Usuario no encontrado"));
+                }))
+                .flatMap(user -> {
+                    boolean passwordOk = passwordGateway.matches(login.password(), user.password());
+                    System.out.println("Password correcto? " + passwordOk);
 
-            if (!passwordOk) {
-                return Mono.error(new RuntimeException("Credenciales inválidas"));
-            }
+                    if (!passwordOk) {
+                        System.out.println("Credenciales inválidas para: " + login.email());
+                        return Mono.error(new RuntimeException("Credenciales inválidas"));
+                    }
 
-            String accessToken = tokenGateway.generateAccessToken(user);
-
-            return Mono.just(new Token(accessToken));
-        });
+                    String accessToken = tokenGateway.generateAccessToken(user);
+                    System.out.println("Login exitoso, generando token para: " + login.email());
+                    return Mono.just(new Token(accessToken));
+                });
     }
 }

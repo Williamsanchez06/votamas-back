@@ -1,14 +1,28 @@
 package com.votamas.config;
 
-import org.springframework.context.annotation.ComponentScan;
+import com.votamas.model.auth.gateways.TokenGateway;
+import com.votamas.model.user.gateways.UserRepository;
+import com.votamas.model.auth.gateways.PasswordGateway;
+import com.votamas.usecase.login.LoginUseCase;
+import com.votamas.usecase.login.CreateUserUseCase;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 
 @Configuration
-@ComponentScan(basePackages = "com.votamas.usecase",
-        includeFilters = {
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "^.+UseCase$")
-        },
-        useDefaultFilters = false)
 public class UseCasesConfig {
+
+    // Bean para crear usuarios
+    @Bean
+    public CreateUserUseCase createUserUseCase(UserRepository userRepository,
+                                               PasswordGateway passwordGateway) {
+        return new CreateUserUseCase(userRepository, passwordGateway);
+    }
+
+    // Bean para login
+    @Bean
+    public LoginUseCase loginUseCase(UserRepository userRepository,
+                                     PasswordGateway passwordGateway,
+                                     TokenGateway tokenGateway) {
+        return new LoginUseCase(userRepository, passwordGateway, tokenGateway);
+    }
 }

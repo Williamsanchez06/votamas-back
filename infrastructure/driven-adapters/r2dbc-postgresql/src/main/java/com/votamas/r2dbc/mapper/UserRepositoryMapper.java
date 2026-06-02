@@ -4,6 +4,7 @@ import com.votamas.model.user.gateways.User;
 import com.votamas.r2dbc.entities.UserData;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
@@ -13,6 +14,7 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface UserRepositoryMapper {
 
+    @Mapping(target = "id", ignore = true)
     UserData toUserData(User user);
 
     User toUser(UserData userData);
