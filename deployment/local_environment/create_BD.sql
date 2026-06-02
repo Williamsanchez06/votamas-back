@@ -35,6 +35,7 @@ SET search_path TO vota_mas;
 \i schemas/1_Tables/04_type.sql
 \i schemas/1_Tables/05_module_type.sql
 \i schemas/1_Tables/06_permission.sql
+\i schemas/1_Tables/07_role_permission.sql
 
 \echo '=========================================='
 \echo 'CREANDO CONSTRAINTS'
@@ -44,6 +45,7 @@ SET search_path TO vota_mas;
 \i schemas/3_Constraints/03_module_constraint.sql
 \i schemas/3_Constraints/04_module_type_constraints.sql
 \i schemas/3_Constraints/05_permission_constraints.sql
+\i schemas/3_Constraints/06_role_permission_constraints.sql
 
 \echo '=========================================='
 \echo 'INSERTANDO DATOS'
@@ -55,6 +57,7 @@ SET search_path TO vota_mas;
 \i inserts/type.sql
 \i inserts/module_type.sql
 \i inserts/permission.sql
+\i inserts/role_permission.sql
 
 \echo '=========================================='
 \echo 'BASE DE DATOS FINALIZADA CORRECTAMENTE'

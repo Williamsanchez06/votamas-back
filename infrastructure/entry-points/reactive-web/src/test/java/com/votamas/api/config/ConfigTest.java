@@ -1,7 +1,7 @@
 package com.votamas.api.config;
 
-import com.votamas.api.handlers.AuthHandler;
-import com.votamas.api.routers.AuthRouterRest;
+import com.votamas.api.auth.handlers.AuthHandler;
+import com.votamas.api.auth.routers.AuthRouterRest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;

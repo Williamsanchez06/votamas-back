@@ -1,6 +1,6 @@
 package com.votamas.model.user.gateways;
 
-import com.votamas.model.user.gateways.User;
+import com.votamas.model.user.User;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 
@@ -8,6 +8,8 @@ public interface UserRepository {
     Mono<User> findByEmail(String email);
 
     Mono<Boolean> existsByEmail(String email);
+
     Mono<User> save(User user);
-    Flux<User> findAll();  // ← nuevo
+
+    Flux<User> findAll();
 }
