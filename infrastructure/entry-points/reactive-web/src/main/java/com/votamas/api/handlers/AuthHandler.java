@@ -21,9 +21,10 @@ public class AuthHandler {
                 .map(LoginMapper.INSTANCE::toLogin)
                 .flatMap(loginUseCase::execute)
                 .map(LoginMapper.INSTANCE::toLoginDTO)
-                .flatMap(LoginResponse -> ServerResponse.ok()
+                .flatMap(loginResponse -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(LoginResponse)
+                        .bodyValue(loginResponse)
                 );
     }
+
 }

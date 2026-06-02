@@ -17,10 +17,7 @@ public class UserAdapter implements UserRepository {
 
     @Override
     public Mono<User> save(User user) {
-        System.out.println(">>> INTENTANDO GUARDAR: " + user.email());
         return repository.save(mapper.toUserData(user))
-                .doOnSuccess(saved -> System.out.println(">>> GUARDADO EN BD: " + saved))
-                .doOnError(error -> System.out.println(">>> ERROR AL GUARDAR: " + error.getMessage()))
                 .map(mapper::toUser);
     }
 

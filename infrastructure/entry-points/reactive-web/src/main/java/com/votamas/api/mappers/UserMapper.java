@@ -1,20 +1,21 @@
-package com.votamas.r2dbc.user.mapper;
+package com.votamas.api.mappers;
 
+import com.votamas.api.dtos.CreateUserRequest;
 import com.votamas.model.user.User;
-import com.votamas.r2dbc.user.entities.UserData;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
-public interface UserRepositoryMapper {
+public interface UserMapper {
 
-    UserData toUserData(User user);
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    User toUser(UserData userData);
+    User toUser(CreateUserRequest request);
 
 }

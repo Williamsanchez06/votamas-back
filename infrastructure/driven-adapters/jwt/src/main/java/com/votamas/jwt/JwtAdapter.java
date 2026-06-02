@@ -32,7 +32,6 @@ public class JwtAdapter implements TokenRepository {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.id());
-        claims.put("email", user.email());
         claims.put("rolesPermissions", userPermissions);
 
         return Jwts.builder()

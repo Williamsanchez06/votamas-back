@@ -1,59 +1,33 @@
 package com.votamas.api.handlers;
 
 import com.votamas.api.dtos.CreateUserRequest;
-import com.votamas.api.dtos.CreateUserResponse;
-import com.votamas.model.user.gateways.User;
-import com.votamas.usecase.login.CreateUserUseCase;
-import com.votamas.usecase.getallusers.GetAllUsersUseCase;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.votamas.api.mappers.UserMapper;
+import com.votamas.model.user.User;
+import com.votamas.usecase.user.UserUseCase;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-@RestController
-@RequestMapping("/api/v1/users")
+@Component
+@RequiredArgsConstructor
 public class UserHandler {
 
-    private final CreateUserUseCase createUserUseCase;
-    private final GetAllUsersUseCase getAllUsersUseCase;
+    private final UserUseCase userUseCase;
 
-    public UserHandler(CreateUserUseCase createUserUseCase,
-                       GetAllUsersUseCase getAllUsersUseCase) {
-        this.createUserUseCase = createUserUseCase;
-        this.getAllUsersUseCase = getAllUsersUseCase;
+    public Mono<ServerResponse> createUser(ServerRequest request) {
+
+        return request.bodyToMono(CreateUserRequest.class)
+                .map(UserMapper.INSTANCE::toUser)
+                .flatMap(userUseCase::saveUser)
+                .flatMap(user -> ServerResponse.ok().bodyValue(user));
+
     }
 
-    // Endpoint para crear usuario
-    @PostMapping
-    public Mono<ResponseEntity<CreateUserResponse>> createUser(@RequestBody CreateUserRequest request) {
-        User user = new User(
-                null,
-                request.name(),
-                request.surname(),
-                request.email(),
-                request.password()
-        );
-
-        return createUserUseCase.execute(user)
-                .map(createdUser -> new CreateUserResponse(
-                        createdUser.id(),
-                        createdUser.name(),
-                        createdUser.surname(),
-                        createdUser.email()
-                ))
-                .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
-    }
-
-    // Endpoint para listar todos los usuarios
-    @GetMapping
-    public Flux<CreateUserResponse> getAllUsers() {
-        return getAllUsersUseCase.execute()
-                .map(user -> new CreateUserResponse(
-                        user.id(),
-                        user.name(),
-                        user.surname(),
-                        user.email()
-                ));
+    public Mono<ServerResponse> getAllUsers(ServerRequest request) {
+        return ServerResponse.ok()
+                .body(userUseCase.getAllUser(), User.class);
     }
 }
