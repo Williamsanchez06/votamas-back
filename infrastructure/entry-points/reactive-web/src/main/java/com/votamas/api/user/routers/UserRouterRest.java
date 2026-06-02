@@ -1,6 +1,6 @@
-package com.votamas.api.routers;
+package com.votamas.api.user.routers;
 
-import com.votamas.api.handlers.UserHandler;
+import com.votamas.api.user.handlers.UserHandler;
 import com.votamas.api.utils.ApiProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

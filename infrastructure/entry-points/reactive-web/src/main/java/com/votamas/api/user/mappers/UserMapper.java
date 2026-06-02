@@ -1,6 +1,6 @@
-package com.votamas.api.mappers;
+package com.votamas.api.user.mappers;
 
-import com.votamas.api.dtos.CreateUserRequest;
+import com.votamas.api.user.dtos.CreateUserRequestDTO;
 import com.votamas.model.user.User;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -16,6 +16,6 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    User toUser(CreateUserRequest request);
+    User toUser(CreateUserRequestDTO request);
 
 }

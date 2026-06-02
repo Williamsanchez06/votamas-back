@@ -1,6 +1,6 @@
-package com.votamas.api.dtos;
+package com.votamas.api.user.dtos;
 
-public record CreateUserRequest(
+public record CreateUserRequestDTO(
         String name,
         String surname,
         String email,

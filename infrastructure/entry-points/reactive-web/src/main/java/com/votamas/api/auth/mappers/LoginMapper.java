@@ -1,7 +1,7 @@
-package com.votamas.api.mappers;
+package com.votamas.api.auth.mappers;
 
-import com.votamas.api.dtos.LoginRequest;
-import com.votamas.api.dtos.LoginResponse;
+import com.votamas.api.auth.dtos.LoginRequest;
+import com.votamas.api.auth.dtos.LoginResponse;
 import com.votamas.model.auth.Login;
 import com.votamas.model.auth.Token;
 import org.mapstruct.InjectionStrategy;

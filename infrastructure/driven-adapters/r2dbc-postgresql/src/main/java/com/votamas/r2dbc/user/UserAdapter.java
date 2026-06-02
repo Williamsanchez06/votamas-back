@@ -28,9 +28,7 @@ public class UserAdapter implements UserRepository {
 
     @Override
     public Mono<Boolean> existsByEmail(String email) {
-        return repository.findByEmail(email)
-                .map(userData -> true)
-                .defaultIfEmpty(false);
+        return repository.existsByEmail(email);
     }
 
     @Override

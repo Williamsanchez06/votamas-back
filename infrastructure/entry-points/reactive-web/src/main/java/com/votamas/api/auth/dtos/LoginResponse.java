@@ -1,4 +1,4 @@
-package com.votamas.api.dtos;
+package com.votamas.api.auth.dtos;
 
 public record LoginResponse(
         String token
