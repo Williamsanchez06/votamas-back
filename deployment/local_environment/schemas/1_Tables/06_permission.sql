@@ -5,5 +5,7 @@ CREATE TABLE vota_mas.permission
     updated_at    TIMESTAMP    NOT NULL DEFAULT now(),
     name          VARCHAR(255) NOT NULL,
     title         VARCHAR(255) NOT NULL,
-    module_id     UUID         NOT NULL
+    module_id     UUID         NOT NULL,
+    CONSTRAINT fk_permission_module FOREIGN KEY (module_id)
+        REFERENCES vota_mas.module(module_id)
 );

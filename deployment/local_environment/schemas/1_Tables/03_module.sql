@@ -10,5 +10,7 @@ CREATE TABLE vota_mas.module
     description    TEXT,
     primary_icon   VARCHAR(255),
     secondary_icon VARCHAR(255),
-    tertiary_icon  VARCHAR(255)
+    tertiary_icon  VARCHAR(255),
+    CONSTRAINT fk_module_parent FOREIGN KEY (parent_id)
+        REFERENCES vota_mas.module(module_id)
 );
