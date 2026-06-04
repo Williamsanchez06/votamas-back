@@ -10,8 +10,7 @@ INSERT INTO vota_mas.potential_voters (
     registration_date,
     assigned_leader_id,
     created_at,
-    updated_at,
-    is_active
+    updated_at
 ) VALUES
 (
     '5b9f1c3b-2f6e-4e90-a9a9-1e7d56f6a001',
@@ -25,8 +24,7 @@ INSERT INTO vota_mas.potential_voters (
     CURRENT_DATE,
     '121e1766-2d53-4f3d-a1e1-8b72f3285e16',
     now(),
-    now(),
-    true
+    now()
 ),
 (
     '5b9f1c3b-2f6e-4e90-a9a9-1e7d56f6a002',
@@ -40,6 +38,5 @@ INSERT INTO vota_mas.potential_voters (
     CURRENT_DATE,
     '121e1766-2d53-4f3d-a1e1-8b72f3285e16',
     now(),
-    now(),
-    true
+    now()
 );
