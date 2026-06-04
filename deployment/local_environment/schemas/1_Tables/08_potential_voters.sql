@@ -12,7 +12,6 @@ CREATE TABLE vota_mas.potential_voters
     assigned_leader_id UUID         NOT NULL,
     created_at         TIMESTAMP(6) NOT NULL DEFAULT now(),
     updated_at         TIMESTAMP(6) NOT NULL DEFAULT now(),
-    is_active          BOOLEAN      NOT NULL DEFAULT true,
     CONSTRAINT fk_potential_voters_assigned_leader FOREIGN KEY (assigned_leader_id)
         REFERENCES vota_mas.users(user_id)
 );
