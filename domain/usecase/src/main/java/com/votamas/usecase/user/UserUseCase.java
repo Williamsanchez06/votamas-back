@@ -1,6 +1,6 @@
 package com.votamas.usecase.user;
 
-import com.votamas.model.auth.gateways.PasswordRepository;
+import com.votamas.model.auth.gateways.PasswordHasher;
 import com.votamas.model.user.User;
 import com.votamas.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class UserUseCase {
 
     private final UserRepository userRepository;
-    private final PasswordRepository passwordRepository;
+    private final PasswordHasher passwordHasher;
 
     public Mono<User> saveUser(User user) {
         return userRepository.existsByEmail(user.email())
@@ -20,7 +20,7 @@ public class UserUseCase {
                         return Mono.error(new IllegalArgumentException("El email ya está registrado"));
                     }
 
-                    String hashedPassword = passwordRepository.hash(user.password());
+                    String hashedPassword = passwordHasher.hash(user.password());
 
                     User userWithHashedPassword = user.toBuilder()
                             .password(hashedPassword)

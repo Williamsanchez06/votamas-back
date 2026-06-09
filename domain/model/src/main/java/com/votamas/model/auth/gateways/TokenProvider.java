@@ -5,6 +5,6 @@ import com.votamas.model.user.User;
 
 import java.util.List;
 
-public interface TokenRepository {
-    String generateAccessToken(User user, List<UserPermission> userPermissions);
+public interface TokenProvider {
+    String generateAccessToken(User user, List<UserPermission> permissions);
 }

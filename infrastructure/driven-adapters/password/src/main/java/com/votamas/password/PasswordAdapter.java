@@ -1,12 +1,12 @@
 package com.votamas.password;
 
-import com.votamas.model.auth.gateways.PasswordRepository;
+import com.votamas.model.auth.gateways.PasswordHasher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PasswordAdapter implements PasswordRepository {
+public class PasswordAdapter implements PasswordHasher {
 
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 

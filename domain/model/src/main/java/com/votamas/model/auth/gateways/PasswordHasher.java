@@ -1,6 +1,6 @@
 package com.votamas.model.auth.gateways;
 
-public interface PasswordRepository {
+public interface PasswordHasher {
 
     String hash(String password);
 
