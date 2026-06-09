@@ -1,6 +1,5 @@
 package com.votamas.jwt;
 
-import com.votamas.model.auth.AuthenticatedUser;
 import com.votamas.model.auth.UserPermission;
 import com.votamas.model.auth.gateways.TokenProvider;
 import com.votamas.model.user.User;
@@ -22,6 +21,9 @@ public class JwtAdapter implements TokenProvider {
 
     @Value("${jwt.expiration}")
     private long expiration;
+
+    @Value("${jwt.issuer}")
+    String issuer;
 
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -48,6 +50,7 @@ public class JwtAdapter implements TokenProvider {
                 .claim("userId", user.id().toString())
                 .claim("roles", roles)
                 .claim("authorities", authorities)
+                .issuer(issuer)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getKey())
