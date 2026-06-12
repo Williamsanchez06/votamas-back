@@ -13,6 +13,7 @@ public record UserData(
         @Column("name") String name,
         @Column("surname") String surname,
         @Column("email") String email,
-        @Column("password") String password
+        @Column("password") String password,
+        @Column("active") Boolean active
 ) {
 }

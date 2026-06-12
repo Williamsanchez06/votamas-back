@@ -15,4 +15,6 @@ public interface UserRepository {
     Flux<User> findAll();
 
     Mono<User> update(UUID id, User user);
+
+    Mono<User> disable(UUID id);
 }

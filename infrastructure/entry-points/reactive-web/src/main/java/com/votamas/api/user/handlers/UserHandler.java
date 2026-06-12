@@ -38,4 +38,10 @@ public class UserHandler {
                 .flatMap(user -> userUseCase.updateUser(id, user))
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));
     }
+
+    public Mono<ServerResponse> disableUser(ServerRequest request) {
+        UUID id = UUID.fromString(request.pathVariable("id"));
+        return userUseCase.disableUser(id)
+                .flatMap(user -> ServerResponse.ok().bodyValue(user));
+    }
 }

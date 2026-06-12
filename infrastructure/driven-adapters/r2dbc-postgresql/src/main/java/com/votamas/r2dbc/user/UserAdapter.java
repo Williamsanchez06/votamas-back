@@ -50,5 +50,16 @@ public class UserAdapter implements UserRepository {
                 })
                 .map(mapper::toUser);
     }
+    @Override
+    public Mono<User> disable(UUID id) {
+        return repository.findById(id)
+                .flatMap(existing -> {
+                    var updated = existing.toBuilder()
+                            .active(false)
+                            .build();
+                    return repository.save(updated);
+                })
+                .map(mapper::toUser);
+    }
 }
 

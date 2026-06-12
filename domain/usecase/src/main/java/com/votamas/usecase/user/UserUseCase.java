@@ -39,6 +39,10 @@ public class UserUseCase {
     public Mono<User> updateUser(UUID id, User user) {
         return userRepository.update(id, user);
     }
+
+    public Mono<User> disableUser(UUID id) {
+        return userRepository.disable(id);
+    }
 }
 
 
