@@ -18,22 +18,23 @@ import java.util.Map;
 @Component
 public class JwtAdapter implements TokenRepository {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+    private final long expiration;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    public JwtAdapter(@Value("${jwt.secret}") String secretKey,
+                      @Value("${jwt.expiration}") long expiration) {
+        this.secretKey = secretKey;
+        this.expiration = expiration;
+    }
 
     @Override
     public String generateAccessToken(User user, List<UserPermission> userPermissions) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.id());
         claims.put("rolesPermissions", userPermissions);
-
         return Jwts.builder()
                 .subject(user.email())
                 .claims(claims)
@@ -42,5 +43,4 @@ public class JwtAdapter implements TokenRepository {
                 .signWith(key)
                 .compact();
     }
-
 }

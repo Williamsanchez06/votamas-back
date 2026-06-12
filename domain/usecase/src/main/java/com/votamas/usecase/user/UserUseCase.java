@@ -6,6 +6,8 @@ import com.votamas.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.util.UUID;
+
 
 @RequiredArgsConstructor
 public class UserUseCase {
@@ -34,4 +36,10 @@ public class UserUseCase {
         return userRepository.findAll();
     }
 
+    public Mono<User> updateUser(UUID id, User user) {
+        return userRepository.update(id, user);
+    }
 }
+
+
+
