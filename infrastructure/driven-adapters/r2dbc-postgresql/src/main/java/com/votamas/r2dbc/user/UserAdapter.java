@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,4 +37,29 @@ public class UserAdapter implements UserRepository {
         return repository.findAll().map(mapper::toUser);
     }
 
+    @Override
+    public Mono<User> update(UUID id, User user) {
+        return repository.findById(id)
+                .flatMap(existing -> {
+                    var updated = existing.toBuilder()
+                            .name(user.name())
+                            .surname(user.surname())
+                            .email(user.email())
+                            .build();
+                    return repository.save(updated);
+                })
+                .map(mapper::toUser);
+    }
+    @Override
+    public Mono<User> disable(UUID id) {
+        return repository.findById(id)
+                .flatMap(existing -> {
+                    var updated = existing.toBuilder()
+                            .active(false)
+                            .build();
+                    return repository.save(updated);
+                })
+                .map(mapper::toUser);
+    }
 }
+
