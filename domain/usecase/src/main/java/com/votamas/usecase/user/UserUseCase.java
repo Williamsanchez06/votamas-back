@@ -8,7 +8,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.UUID;
 
-
 @RequiredArgsConstructor
 public class UserUseCase {
 
@@ -37,7 +36,17 @@ public class UserUseCase {
     }
 
     public Mono<User> updateUser(UUID id, User user) {
-        return userRepository.update(id, user);
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
+                .flatMap(existing -> {
+                    User updated = existing.toBuilder()
+                            .name(user.name())
+                            .surname(user.surname())
+                            .email(user.email())
+                            .build();
+
+                    return userRepository.save(updated);
+                });
     }
 
     public Mono<User> disableUser(UUID id) {

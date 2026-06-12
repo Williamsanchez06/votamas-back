@@ -6,6 +6,9 @@ import reactor.core.publisher.Flux;
 import java.util.UUID;
 
 public interface UserRepository {
+
+    Mono<User> findById(UUID id);
+
     Mono<User> findByEmail(String email);
 
     Mono<Boolean> existsByEmail(String email);
@@ -13,8 +16,6 @@ public interface UserRepository {
     Mono<User> save(User user);
 
     Flux<User> findAll();
-
-    Mono<User> update(UUID id, User user);
 
     Mono<User> disable(UUID id);
 }

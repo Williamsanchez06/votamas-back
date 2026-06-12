@@ -1,6 +1,6 @@
 package com.votamas.api.user.handlers;
 
-import com.votamas.api.user.dtos.CreateUserRequestDTO;
+import com.votamas.api.user.dtos.UserRequestDTO;
 import com.votamas.api.user.mappers.UserMapper;
 import com.votamas.model.user.User;
 import com.votamas.usecase.user.UserUseCase;
@@ -19,7 +19,7 @@ public class UserHandler {
 
     public Mono<ServerResponse> createUser(ServerRequest request) {
 
-        return request.bodyToMono(CreateUserRequestDTO.class)
+        return request.bodyToMono(UserRequestDTO.class)
                 .map(UserMapper.INSTANCE::toUser)
                 .flatMap(userUseCase::saveUser)
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));
@@ -33,7 +33,8 @@ public class UserHandler {
 
     public Mono<ServerResponse> updateUser(ServerRequest request) {
         UUID id = UUID.fromString(request.pathVariable("id"));
-        return request.bodyToMono(CreateUserRequestDTO.class)
+
+        return request.bodyToMono(UserRequestDTO.class)
                 .map(UserMapper.INSTANCE::toUser)
                 .flatMap(user -> userUseCase.updateUser(id, user))
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));

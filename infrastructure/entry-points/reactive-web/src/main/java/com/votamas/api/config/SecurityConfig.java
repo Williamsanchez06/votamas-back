@@ -27,6 +27,9 @@ import java.util.List;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
+    public static final String PATH_USER = "/api/v1/user/**";
+
+
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
@@ -35,8 +38,10 @@ public class SecurityConfig {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/v1/auth/login", "/actuator/health", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/api/v1/user/**").hasAuthority("GET_USER")
-                        .pathMatchers(HttpMethod.POST, "/api/v1/user/**").hasAuthority("CREATE_USER")
+                        .pathMatchers(HttpMethod.GET, PATH_USER).hasAuthority("GET_USER")
+                        .pathMatchers(HttpMethod.POST, PATH_USER).hasAuthority("CREATE_USER")
+                        .pathMatchers(HttpMethod.PUT, PATH_USER).hasAuthority("EDIT_USER")
+                        .pathMatchers(HttpMethod.PATCH, PATH_USER).hasAuthority("EDIT_USER")
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

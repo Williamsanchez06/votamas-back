@@ -38,18 +38,11 @@ public class UserAdapter implements UserRepository {
     }
 
     @Override
-    public Mono<User> update(UUID id, User user) {
+    public Mono<User> findById(UUID id) {
         return repository.findById(id)
-                .flatMap(existing -> {
-                    var updated = existing.toBuilder()
-                            .name(user.name())
-                            .surname(user.surname())
-                            .email(user.email())
-                            .build();
-                    return repository.save(updated);
-                })
                 .map(mapper::toUser);
     }
+
     @Override
     public Mono<User> disable(UUID id) {
         return repository.findById(id)
