@@ -21,7 +21,10 @@ public class UserRouterRest {
         return RouterFunctions.route()
                 .GET(apiProperties.baseApiPath.concat("/user"), userHandler::getAllUsers)
                 .POST(apiProperties.baseApiPath.concat("/user"), userHandler::createUser)
+                .PUT(apiProperties.baseApiPath.concat("/user/{id}"), userHandler::updateUser)
+                .PATCH(apiProperties.baseApiPath.concat("/user/{id}/disable"), userHandler::disableUser)
                 .build();
+
     }
 
 }
