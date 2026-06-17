@@ -36,7 +36,10 @@ SET search_path TO vota_mas;
 \i schemas/1_Tables/05_module_type.sql
 \i schemas/1_Tables/06_permission.sql
 \i schemas/1_Tables/07_role_permission.sql
-\i schemas/1_Tables/08_potential_voters.sql
+\i schemas/1_Tables/08_voting_zones.sql
+\i schemas/1_Tables/09_polling_places.sql
+\i schemas/1_Tables/10_voting_tables.sql
+\i schemas/1_Tables/11_potential_voters.sql
 
 \echo '=========================================='
 \echo 'INSERTANDO DATOS'
@@ -49,6 +52,9 @@ SET search_path TO vota_mas;
 \i inserts/module_type.sql
 \i inserts/permission.sql
 \i inserts/role_permission.sql
+\i inserts/voting_zones.sql
+\i inserts/polling_places.sql
+\i inserts/voting_tables.sql
 \i inserts/potential_voters.sql
 
 \echo '=========================================='
