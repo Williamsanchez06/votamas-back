@@ -45,4 +45,10 @@ public class UserHandler {
         return userUseCase.disableUser(id)
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));
     }
+
+    public Mono<ServerResponse> enableUser(ServerRequest request) {
+        UUID id = UUID.fromString(request.pathVariable("id"));
+        return userUseCase.enableUser(id)
+                .flatMap(user -> ServerResponse.ok().bodyValue(user));
+    }
 }
