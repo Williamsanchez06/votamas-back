@@ -28,7 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
     public static final String PATH_USER = "/api/v1/user/**";
-
+    public static final String PATH_POTENTIAL_VOTER = "/api/v1/potential-voter/**";
 
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
@@ -42,6 +42,9 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.POST, PATH_USER).hasAuthority("CREATE_USER")
                         .pathMatchers(HttpMethod.PUT, PATH_USER).hasAuthority("EDIT_USER")
                         .pathMatchers(HttpMethod.PATCH, PATH_USER).hasAuthority("EDIT_USER")
+                        .pathMatchers(HttpMethod.GET, PATH_POTENTIAL_VOTER).hasAuthority("GET_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.POST, PATH_POTENTIAL_VOTER).hasAuthority("CREATE_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.PUT, PATH_POTENTIAL_VOTER).hasAuthority("EDIT_POTENTIAL_VOTER")
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

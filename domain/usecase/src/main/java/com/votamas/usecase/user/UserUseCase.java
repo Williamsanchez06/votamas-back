@@ -52,6 +52,10 @@ public class UserUseCase {
     public Mono<User> disableUser(UUID id) {
         return userRepository.disable(id);
     }
+
+    public Mono<User> enableUser(UUID id) {
+        return userRepository.enable(id);
+    }
 }
 
 
