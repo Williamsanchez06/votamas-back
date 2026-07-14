@@ -44,23 +44,11 @@ public class UserAdapter implements UserRepository {
     }
 
     @Override
-    public Mono<User> disable(UUID id) {
+    public Mono<User> updateStatus(UUID id, boolean active) {
         return repository.findById(id)
                 .flatMap(existing -> {
                     var updated = existing.toBuilder()
-                            .active(false)
-                            .build();
-                    return repository.save(updated);
-                })
-                .map(mapper::toUser);
-    }
-
-    @Override
-    public Mono<User> enable(UUID id) {
-        return repository.findById(id)
-                .flatMap(existing -> {
-                    var updated = existing.toBuilder()
-                            .active(true)
+                            .active(active)
                             .build();
                     return repository.save(updated);
                 })

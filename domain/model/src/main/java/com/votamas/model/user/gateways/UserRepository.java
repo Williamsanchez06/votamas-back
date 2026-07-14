@@ -17,8 +17,6 @@ public interface UserRepository {
 
     Flux<User> findAll();
 
-    Mono<User> disable(UUID id);
-
-    Mono<User> enable(UUID id);
+    Mono<User> updateStatus(UUID id, boolean active);
 
 }

@@ -1,6 +1,7 @@
 package com.votamas.api.user.handlers;
 
 import com.votamas.api.user.dtos.UserRequestDTO;
+import com.votamas.api.user.dtos.UserStatusRequestDTO;
 import com.votamas.api.user.mappers.UserMapper;
 import com.votamas.model.user.User;
 import com.votamas.usecase.user.UserUseCase;
@@ -9,7 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 @RequiredArgsConstructor
@@ -40,15 +44,16 @@ public class UserHandler {
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));
     }
 
-    public Mono<ServerResponse> disableUser(ServerRequest request) {
+    public Mono<ServerResponse> changeUserStatus(ServerRequest request) {
         UUID id = UUID.fromString(request.pathVariable("id"));
-        return userUseCase.disableUser(id)
-                .flatMap(user -> ServerResponse.ok().bodyValue(user));
-    }
-
-    public Mono<ServerResponse> enableUser(ServerRequest request) {
-        UUID id = UUID.fromString(request.pathVariable("id"));
-        return userUseCase.enableUser(id)
-                .flatMap(user -> ServerResponse.ok().bodyValue(user));
+        return request.bodyToMono(UserStatusRequestDTO.class)
+                .filter(status -> status.active() != null)
+                .flatMap(status -> userUseCase.changeUserStatus(id, status.active()))
+                .flatMap(user -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(user))
+                .switchIfEmpty(ServerResponse.badRequest()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue("El campo 'active' es obligatorio"));
     }
 }

@@ -10,4 +10,5 @@ VALUES
 ('e50411ea-ab77-453c-a75a-3b085f9eaef2', '4b8111c9-3c22-4e8c-babc-f09d5a95ea8f'),
 ('e50411ea-ab77-453c-a75a-3b085f9eaef2', '721a25cb-c3f5-4e85-9389-f259c8d57cd1'),
 ('e50411ea-ab77-453c-a75a-3b085f9eaef2', 'f39d68a9-a8e8-466e-a008-1d09d8078ef7'),
-('e50411ea-ab77-453c-a75a-3b085f9eaef2', '0d7f8597-df66-42e1-b468-aaf38bb496ef');
+('e50411ea-ab77-453c-a75a-3b085f9eaef2', '0d7f8597-df66-42e1-b468-aaf38bb496ef'),
+('e50411ea-ab77-453c-a75a-3b085f9eaef2', '265ecad3-00e7-4d16-b497-a456934c9f3f');
