@@ -62,4 +62,17 @@ INSERT INTO vota_mas.module (
     'icon-user',
     'icon-bar-chart',
     'icon-pie-chart'
+),
+(
+    5,
+    now(),
+    now(),
+    '7f87f369-b46f-4e45-9380-51152c2d352d',
+    null,
+    'Posibles votantes',
+    'potential-voters',
+    'Gestión de posibles votantes',
+    'icon-user-check',
+    'icon-users',
+    'icon-list'
 );

@@ -23,7 +23,7 @@ cors:
 adapters:
   r2dbc:
     host: "localhost"
-    port: 5433
+    port: 5432
     database: "votamas"
     schema: "vota_mas"
     username: "postgres"

@@ -17,6 +17,6 @@ public class PasswordAdapter implements PasswordHasher {
 
     @Override
     public boolean matches(String rawPassword, String hashedPassword) {
-        return encoder.matches(rawPassword, hashedPassword);  // compara la contraseña cruda con la encriptada
+        return encoder.matches(rawPassword, hashedPassword);
     }
 }
