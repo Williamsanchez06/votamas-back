@@ -11,7 +11,9 @@ public enum MessageError {
     INVALID_CREDENTIALS(Constants.ERROR_401, "Credenciales inválidas"),
     ACCESS_DENIED(Constants.ERROR_403, "No tiene permisos para realizar esta operación"),
     NO_USER_FOUND(Constants.ERROR_404, "Usuario no encontrado"),
-    EMAIL_ALREADY_REGISTERED(Constants.ERROR_409, "El email ya está registrado");
+    NO_POTENTIAL_VOTER_FOUND(Constants.ERROR_404, "Posible Votante no encontrado"),
+    EMAIL_ALREADY_REGISTERED(Constants.ERROR_409, "El email ya está registrado"),
+    ID_ALREADY_REGISTERED(Constants.ERROR_409, "La identificación ya esta registrada");
 
     private final String code;
     private final String message;

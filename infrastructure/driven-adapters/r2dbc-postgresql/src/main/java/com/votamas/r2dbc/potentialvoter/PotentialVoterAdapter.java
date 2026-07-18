@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import java.util.UUID;
 
 @Repository
@@ -35,11 +36,5 @@ public class PotentialVoterAdapter implements PotentialVoterRepository {
     @Override
     public Mono<PotentialVoter> findById(UUID id) {
         return repository.findById(id).map(mapper::toModel);
-    }
-
-    @Override
-    public Mono<PotentialVoter> update(UUID id, PotentialVoter potentialVoter) {
-        return repository.save(mapper.toData(potentialVoter))
-                .map(mapper::toModel);
     }
 }
