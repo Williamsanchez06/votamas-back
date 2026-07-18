@@ -1,11 +1,16 @@
 package com.votamas.r2dbc.user;
 
 import com.votamas.model.user.User;
+import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.common.pagination.PageResult;
 import com.votamas.model.user.gateways.UserRepository;
+import com.votamas.r2dbc.user.entities.UserData;
 import com.votamas.r2dbc.user.mapper.UserRepositoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Query;
 import reactor.core.publisher.Mono;
 import java.util.UUID;
 
@@ -15,6 +20,7 @@ public class UserAdapter implements UserRepository {
 
     private final UserReactiveRepository repository;
     private final UserRepositoryMapper mapper;
+    private final R2dbcEntityTemplate template;
 
     @Override
     public Mono<User> save(User user) {
@@ -33,8 +39,17 @@ public class UserAdapter implements UserRepository {
     }
 
     @Override
-    public Flux<User> findAll() {
-        return repository.findAll().map(mapper::toUser);
+    public Mono<PageResult<User>> findAll(PageRequest pageRequest) {
+        Query pageQuery = Query.empty()
+                .sort(Sort.by(Sort.Direction.ASC, "name", "surname"))
+                .limit(pageRequest.size())
+                .offset(pageRequest.offset());
+
+        return Mono.zip(
+                template.select(pageQuery, UserData.class).map(mapper::toUser).collectList(),
+                template.count(Query.empty(), UserData.class),
+                (users, total) -> PageResult.of(users, pageRequest, total)
+        );
     }
 
     @Override
@@ -54,5 +69,6 @@ public class UserAdapter implements UserRepository {
                 })
                 .map(mapper::toUser);
     }
+
 }
 

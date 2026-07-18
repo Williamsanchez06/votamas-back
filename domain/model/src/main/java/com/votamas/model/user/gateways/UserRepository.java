@@ -1,8 +1,9 @@
 package com.votamas.model.user.gateways;
 
 import com.votamas.model.user.User;
+import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.common.pagination.PageResult;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Flux;
 import java.util.UUID;
 
 public interface UserRepository {
@@ -15,7 +16,7 @@ public interface UserRepository {
 
     Mono<User> save(User user);
 
-    Flux<User> findAll();
+    Mono<PageResult<User>> findAll(PageRequest pageRequest);
 
     Mono<User> updateStatus(UUID id, boolean active);
 

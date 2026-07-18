@@ -6,6 +6,8 @@ import com.votamas.model.auth.gateways.PasswordHasher;
 import com.votamas.model.auth.gateways.UserPermissionRepository;
 import com.votamas.model.auth.gateways.TokenProvider;
 import com.votamas.model.user.gateways.UserRepository;
+import com.votamas.model.exception.AuthenticationException;
+import com.votamas.model.exception.MessageError;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -20,13 +22,13 @@ public class LoginUseCase {
     public Mono<Token> execute(Login login) {
 
         return userRepository.findByEmail(login.email())
-                .switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado")))
+                .switchIfEmpty(Mono.error(new AuthenticationException(MessageError.INVALID_CREDENTIALS)))
                 .flatMap(user -> {
 
                     boolean isValidPassword = passwordHasher.matches(login.password(), user.password());
 
                     if (!isValidPassword) {
-                        return Mono.error(new RuntimeException("Password incorrecto"));
+                        return Mono.error(new AuthenticationException(MessageError.INVALID_CREDENTIALS));
                     }
 
                     return userPermissionRepository.findPermissionsByUserId(user.id())

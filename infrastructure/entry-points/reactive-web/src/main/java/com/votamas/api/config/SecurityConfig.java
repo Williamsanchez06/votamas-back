@@ -1,5 +1,7 @@
 package com.votamas.api.config;
 
+import com.votamas.api.exceptions.SecurityExceptionHandler;
+import com.votamas.model.exception.MessageError;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,11 +34,17 @@ public class SecurityConfig {
     public static final String PATH_POTENTIAL_VOTER = "/api/v1/potential-voter/**";
 
     @Bean
-    SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
+                                                     SecurityExceptionHandler exceptionHandler) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .exceptionHandling(errors -> errors
+                        .authenticationEntryPoint((exchange, exception) -> exceptionHandler.handle(
+                                exchange, MessageError.AUTHENTICATION_REQUIRED, exception))
+                        .accessDeniedHandler((exchange, exception) -> exceptionHandler.handle(
+                                exchange, MessageError.ACCESS_DENIED, exception)))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/v1/auth/login", "/actuator/health", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .pathMatchers(HttpMethod.GET, PATH_USER).hasAuthority("GET_USER")

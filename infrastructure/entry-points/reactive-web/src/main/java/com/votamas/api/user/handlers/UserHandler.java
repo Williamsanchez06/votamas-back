@@ -3,7 +3,9 @@ package com.votamas.api.user.handlers;
 import com.votamas.api.user.dtos.UserRequestDTO;
 import com.votamas.api.user.dtos.UserStatusRequestDTO;
 import com.votamas.api.user.mappers.UserMapper;
-import com.votamas.model.user.User;
+import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.exception.ValidationException;
+import com.votamas.model.exception.MessageError;
 import com.votamas.usecase.user.UserUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,13 +28,21 @@ public class UserHandler {
         return request.bodyToMono(UserRequestDTO.class)
                 .map(UserMapper.INSTANCE::toUser)
                 .flatMap(userUseCase::saveUser)
+                .map(UserMapper.INSTANCE::toResponse)
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));
 
     }
 
     public Mono<ServerResponse> getAllUsers(ServerRequest request) {
-        return ServerResponse.ok()
-                .body(userUseCase.getAllUser(), User.class);
+        PageRequest pageRequest = new PageRequest(
+                queryInt(request, "page", PageRequest.DEFAULT_PAGE),
+                queryInt(request, "size", PageRequest.DEFAULT_SIZE)
+        );
+        return userUseCase.getAllUsers(pageRequest)
+                .map(result -> result.map(UserMapper.INSTANCE::toResponse))
+                .flatMap(result -> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(result));
     }
 
     public Mono<ServerResponse> updateUser(ServerRequest request) {
@@ -41,6 +51,7 @@ public class UserHandler {
         return request.bodyToMono(UserRequestDTO.class)
                 .map(UserMapper.INSTANCE::toUser)
                 .flatMap(user -> userUseCase.updateUser(id, user))
+                .map(UserMapper.INSTANCE::toResponse)
                 .flatMap(user -> ServerResponse.ok().bodyValue(user));
     }
 
@@ -49,11 +60,15 @@ public class UserHandler {
         return request.bodyToMono(UserStatusRequestDTO.class)
                 .filter(status -> status.active() != null)
                 .flatMap(status -> userUseCase.changeUserStatus(id, status.active()))
+                .map(UserMapper.INSTANCE::toResponse)
                 .flatMap(user -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(user))
-                .switchIfEmpty(ServerResponse.badRequest()
-                        .contentType(APPLICATION_JSON)
-                        .bodyValue("El campo 'active' es obligatorio"));
+                .switchIfEmpty(Mono.error(new ValidationException(MessageError.VALIDATION_ERROR)));
     }
+
+    private int queryInt(ServerRequest request, String name, int defaultValue) {
+        return request.queryParam(name).map(Integer::parseInt).orElse(defaultValue);
+    }
+
 }
