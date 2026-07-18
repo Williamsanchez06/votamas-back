@@ -12,6 +12,6 @@ import org.mapstruct.ReportingPolicy;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
 public interface PotentialVoterRepositoryMapper {
-    PotentialVoterData toData(PotentialVoter potentialVoter);
-    PotentialVoter toModel(PotentialVoterData data);
+    PotentialVoterData toPotentialVoterData(PotentialVoter potentialVoter);
+    PotentialVoter toPotentialVoter(PotentialVoterData data);
 }

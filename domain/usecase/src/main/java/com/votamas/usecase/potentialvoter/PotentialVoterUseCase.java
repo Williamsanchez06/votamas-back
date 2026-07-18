@@ -1,5 +1,7 @@
 package com.votamas.usecase.potentialvoter;
 
+import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.common.pagination.PageResult;
 import com.votamas.model.exception.ConflictException;
 import com.votamas.model.exception.MessageError;
 import com.votamas.model.exception.NotFoundException;
@@ -26,8 +28,8 @@ public class PotentialVoterUseCase {
                 });
     }
 
-    public Flux<PotentialVoter> getAllPotentialVoters() {
-        return potentialVoterRepository.findAll();
+    public Mono<PageResult<PotentialVoter>> getAllPotentialVoters(PageRequest pageRequest) {
+        return potentialVoterRepository.findAll(pageRequest);
     }
 
     public Mono<PotentialVoter> updatePotentialVoter(UUID id, PotentialVoter potentialVoter) {

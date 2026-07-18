@@ -1,6 +1,7 @@
 package com.votamas.api.potentialvoter.mappers;
 
 import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterResponseDTO;
 import com.votamas.model.potentialvoter.PotentialVoter;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -14,5 +15,7 @@ import org.mapstruct.factory.Mappers;
 )
 public interface PotentialVoterMapper {
     PotentialVoterMapper INSTANCE = Mappers.getMapper(PotentialVoterMapper.class);
+
     PotentialVoter toPotentialVoter(PotentialVoterRequestDTO request);
+    PotentialVoterResponseDTO toResponse(PotentialVoter potentialVoter);
 }
