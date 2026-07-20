@@ -2,32 +2,25 @@ package com.votamas.api.exceptions;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @UtilityClass
 public class HttpStatusExceptionMap {
 
-    private static final Map<String, String> httpStatusException;
+    private static final int INTERNAL_SERVER_ERROR = 500;
+    private static final Map<String, Integer> HTTP_STATUS_BY_CODE = Map.of(
+            "BP400", 400,
+            "BP401", 401,
+            "BP403", 403,
+            "BP404", 404,
+            "BP409", 409
+    );
 
-    private final String INTERNAL_SERVER_ERROR = "500";
-
-    private final String RESOURCE_NOT_FOUND = "404";
-
-    static {
-        httpStatusException = new HashMap<>();
-        httpStatusException.put("BP400", "400");
-        httpStatusException.put("BP401", "401");
-        httpStatusException.put("BP403", "403");
-        httpStatusException.put("BP404", "404");
-        httpStatusException.put("BP409", "409");
+    public static int get(String code) {
+        return HTTP_STATUS_BY_CODE.getOrDefault(code, INTERNAL_SERVER_ERROR);
     }
 
-    public static String get(String code) {
-        return httpStatusException.containsKey(code) ? httpStatusException.get(code) : getDefaultStatus();
-    }
-
-    public static String getDefaultStatus() {
+    public static int getDefaultStatus() {
         return INTERNAL_SERVER_ERROR;
     }
 

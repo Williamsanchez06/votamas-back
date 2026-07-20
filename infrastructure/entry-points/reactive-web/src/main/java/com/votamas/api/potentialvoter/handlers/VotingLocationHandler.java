@@ -2,8 +2,7 @@ package com.votamas.api.potentialvoter.handlers;
 
 import com.votamas.api.potentialvoter.dtos.VotingZoneResponseDTO;
 import com.votamas.api.potentialvoter.mappers.VotingLocationMapper;
-import com.votamas.model.exception.MessageError;
-import com.votamas.model.exception.ValidationException;
+import com.votamas.api.utils.PathVariableParser;
 import com.votamas.usecase.potentialvoter.VotingLocationUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -27,7 +26,7 @@ public class VotingLocationHandler {
     }
 
     public Mono<ServerResponse> getVotingZone(ServerRequest request) {
-        UUID zoneId = parseId(request.pathVariable("zoneId"));
+        UUID zoneId = PathVariableParser.uuid(request.pathVariable("zoneId"));
         return useCase.getVotingZone(zoneId)
                 .map(VotingLocationMapper.INSTANCE::toResponse)
                 .flatMap(response -> ServerResponse.ok()
@@ -35,11 +34,4 @@ public class VotingLocationHandler {
                         .bodyValue(response));
     }
 
-    private UUID parseId(String value) {
-        try {
-            return UUID.fromString(value);
-        } catch (IllegalArgumentException exception) {
-            throw new ValidationException(MessageError.VALIDATION_ERROR);
-        }
-    }
 }

@@ -3,6 +3,7 @@ package com.votamas.api.potentialvoter.handlers;
 import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
 import com.votamas.api.utils.PaginationRequestParser;
+import com.votamas.api.utils.PathVariableParser;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class PotentialVoterHandler {
     }
 
     public Mono<ServerResponse> updatePotentialVoter(ServerRequest request) {
-        UUID id = UUID.fromString(request.pathVariable("id"));
+        UUID id = PathVariableParser.uuid(request.pathVariable("id"));
 
         return request.bodyToMono(PotentialVoterRequestDTO.class)
                 .map(PotentialVoterMapper.INSTANCE::toPotentialVoter)

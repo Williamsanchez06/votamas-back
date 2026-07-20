@@ -4,6 +4,7 @@ import com.votamas.api.user.dtos.UserRequestDTO;
 import com.votamas.api.user.dtos.UserStatusRequestDTO;
 import com.votamas.api.user.mappers.UserMapper;
 import com.votamas.api.utils.PaginationRequestParser;
+import com.votamas.api.utils.PathVariableParser;
 import com.votamas.model.exception.ValidationException;
 import com.votamas.model.exception.MessageError;
 import com.votamas.usecase.user.UserUseCase;
@@ -43,7 +44,7 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> updateUser(ServerRequest request) {
-        UUID id = UUID.fromString(request.pathVariable("id"));
+        UUID id = PathVariableParser.uuid(request.pathVariable("id"));
 
         return request.bodyToMono(UserRequestDTO.class)
                 .map(UserMapper.INSTANCE::toUser)
@@ -53,7 +54,7 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> changeUserStatus(ServerRequest request) {
-        UUID id = UUID.fromString(request.pathVariable("id"));
+        UUID id = PathVariableParser.uuid(request.pathVariable("id"));
         return request.bodyToMono(UserStatusRequestDTO.class)
                 .filter(status -> status.active() != null)
                 .flatMap(status -> userUseCase.changeUserStatus(id, status.active()))
