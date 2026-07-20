@@ -32,6 +32,7 @@ public class SecurityConfig {
     public static final String PATH_USER = "/api/v1/user/**";
     public static final String PATH_USER_STATUS = "/api/v1/user/*/status";
     public static final String PATH_POTENTIAL_VOTER = "/api/v1/potential-voter/**";
+    public static final String PATH_VOTING_ZONE = "/api/v1/voting-zones/**";
 
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PATCH, PATH_USER_STATUS).hasAuthority("CHANGE_USER_STATUS")
                         .pathMatchers(HttpMethod.PATCH, PATH_USER).hasAuthority("EDIT_USER")
                         .pathMatchers(HttpMethod.GET, PATH_POTENTIAL_VOTER).hasAuthority("GET_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.GET, PATH_VOTING_ZONE).hasAuthority("GET_POTENTIAL_VOTER")
                         .pathMatchers(HttpMethod.POST, PATH_POTENTIAL_VOTER).hasAuthority("CREATE_POTENTIAL_VOTER")
                         .pathMatchers(HttpMethod.PUT, PATH_POTENTIAL_VOTER).hasAuthority("EDIT_POTENTIAL_VOTER")
                         .anyExchange().authenticated()

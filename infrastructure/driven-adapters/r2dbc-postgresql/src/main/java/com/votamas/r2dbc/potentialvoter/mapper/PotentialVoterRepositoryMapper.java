@@ -13,5 +13,6 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface PotentialVoterRepositoryMapper {
     PotentialVoterData toPotentialVoterData(PotentialVoter potentialVoter);
+
     PotentialVoter toPotentialVoter(PotentialVoterData data);
 }

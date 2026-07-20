@@ -3,6 +3,10 @@ package com.votamas.model.common.pagination;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
+
+import com.votamas.model.potentialvoter.PotentialVoterDetails;
+import com.votamas.model.potentialvoter.VotingTable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,5 +60,20 @@ class PageResultTest {
         assertThrows(IllegalArgumentException.class, () -> new PageRequest(-1, 10));
         assertThrows(IllegalArgumentException.class, () -> new PageRequest(0, 0));
         assertThrows(IllegalArgumentException.class, () -> new PageRequest(0, 101));
+    }
+
+    @Test
+    void shouldPreservePaginationWhenContentIsEnriched() {
+        PotentialVoterDetails voter = PotentialVoterDetails.builder()
+                .id(UUID.randomUUID())
+                .votingTable(new VotingTable(UUID.randomUUID(), null, 10))
+                .build();
+        PageResult<PotentialVoterDetails> result = PageResult.of(List.of(voter), new PageRequest(1, 10), 12);
+
+        assertEquals(1, result.page());
+        assertEquals(10, result.size());
+        assertEquals(12, result.totalElements());
+        assertEquals(2, result.totalPages());
+        assertEquals(10, result.content().getFirst().votingTable().tableNumber());
     }
 }

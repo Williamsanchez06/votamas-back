@@ -1,14 +1,17 @@
-package com.votamas.api.potentialvoter.dtos;
+package com.votamas.model.potentialvoter;
+
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record PotentialVoterResponseDTO(
+@Builder
+public record PotentialVoterDetails(
         UUID id,
         String identification,
         String firstName,
         String lastName,
-        VotingTableResponseDTO votingTable,
+        VotingTable votingTable,
         LocalDate registrationDate,
         UUID assignedLeaderId
 ) {

@@ -6,9 +6,10 @@ import com.votamas.model.exception.ConflictException;
 import com.votamas.model.exception.MessageError;
 import com.votamas.model.exception.NotFoundException;
 import com.votamas.model.potentialvoter.PotentialVoter;
+import com.votamas.model.potentialvoter.PotentialVoterDetails;
+import com.votamas.model.potentialvoter.gateways.PotentialVoterQueryRepository;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterRepository;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class PotentialVoterUseCase {
 
     private final PotentialVoterRepository potentialVoterRepository;
+    private final PotentialVoterQueryRepository potentialVoterQueryRepository;
 
     public Mono<PotentialVoter> savePotentialVoter(PotentialVoter potentialVoter) {
         return potentialVoterRepository.existsByIdentification(potentialVoter.identification())
@@ -28,8 +30,8 @@ public class PotentialVoterUseCase {
                 });
     }
 
-    public Mono<PageResult<PotentialVoter>> getAllPotentialVoters(PageRequest pageRequest) {
-        return potentialVoterRepository.findAll(pageRequest);
+    public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(PageRequest pageRequest) {
+        return potentialVoterQueryRepository.findAllWithVotingLocation(pageRequest);
     }
 
     public Mono<PotentialVoter> updatePotentialVoter(UUID id, PotentialVoter potentialVoter) {
