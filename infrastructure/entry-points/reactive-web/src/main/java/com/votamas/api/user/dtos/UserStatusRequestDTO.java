@@ -1,4 +1,7 @@
 package com.votamas.api.user.dtos;
 
-public record UserStatusRequestDTO(Boolean active) {
+import jakarta.validation.constraints.NotNull;
+
+public record UserStatusRequestDTO(
+        @NotNull(message = "El estado es obligatorio") Boolean active) {
 }

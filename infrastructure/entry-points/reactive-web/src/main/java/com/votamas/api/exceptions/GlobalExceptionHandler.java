@@ -1,6 +1,7 @@
 package com.votamas.api.exceptions;
 
 import com.votamas.api.observability.RequestTracing;
+import com.votamas.api.validation.InvalidRequestException;
 import com.votamas.model.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -42,6 +43,8 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
     private Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
         return Mono.defer(() -> Mono.error(getError(request))
+                        .onErrorResume(InvalidRequestException.class,
+                                error -> handleInvalidRequest(error, request))
                         .onErrorResume(BusinessException.class, error -> handleBusinessException(error, request))
                         .onErrorResume(ServerWebInputException.class,
                                 error -> handleExpectedError(ApiError.INVALID_REQUEST, error, request))
@@ -49,6 +52,15 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
                                 error -> handleExpectedError(ApiError.RESOURCE_NOT_FOUND, error, request))
                         .onErrorResume(error -> handleUnexpectedException(error, request)))
                 .cast(ServerResponse.class);
+    }
+
+    private Mono<ServerResponse> handleInvalidRequest(InvalidRequestException error, ServerRequest request) {
+        var fields = error.errors().stream().map(fieldError -> fieldError.field()).distinct().toList();
+        log.warn("event=INVALID_REQUEST requestId={} method={} path={} status=400 code={} invalidFields={}",
+                requestId(request), request.method(), request.path(), ApiError.INVALID_REQUEST.code(), fields);
+        var response = new ErrorResponse(ApiError.INVALID_REQUEST.code(), error.getMessage(),
+                ApiError.INVALID_REQUEST.status(), requestId(request), Instant.now(), error.errors());
+        return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON).bodyValue(response);
     }
 
     private Mono<ServerResponse> handleBusinessException(BusinessException error, ServerRequest request) {

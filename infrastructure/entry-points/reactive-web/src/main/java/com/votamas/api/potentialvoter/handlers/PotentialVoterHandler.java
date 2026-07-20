@@ -4,6 +4,7 @@ import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
 import com.votamas.api.utils.PaginationRequestParser;
 import com.votamas.api.utils.PathVariableParser;
+import com.votamas.api.validation.RequestValidator;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class PotentialVoterHandler {
 
     private final PotentialVoterUseCase potentialVoterUseCase;
+    private final RequestValidator requestValidator;
 
     public Mono<ServerResponse> createPotentialVoter(ServerRequest request) {
-        return request.bodyToMono(PotentialVoterRequestDTO.class)
+        return requestValidator.body(request, PotentialVoterRequestDTO.class)
                 .map(PotentialVoterMapper.INSTANCE::toPotentialVoter)
                 .flatMap(potentialVoterUseCase::savePotentialVoter)
                 .flatMap(pv -> ServerResponse.ok().bodyValue(pv));
@@ -37,9 +39,9 @@ public class PotentialVoterHandler {
     }
 
     public Mono<ServerResponse> updatePotentialVoter(ServerRequest request) {
-        UUID id = PathVariableParser.uuid(request.pathVariable("id"));
+        UUID id = PathVariableParser.uuid(request.pathVariable("id"), "id");
 
-        return request.bodyToMono(PotentialVoterRequestDTO.class)
+        return requestValidator.body(request, PotentialVoterRequestDTO.class)
                 .map(PotentialVoterMapper.INSTANCE::toPotentialVoter)
                 .flatMap(pv -> potentialVoterUseCase.updatePotentialVoter(id, pv))
                 .flatMap(pv -> ServerResponse.ok().bodyValue(pv));

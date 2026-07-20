@@ -26,7 +26,7 @@ public class VotingLocationHandler {
     }
 
     public Mono<ServerResponse> getVotingZone(ServerRequest request) {
-        UUID zoneId = PathVariableParser.uuid(request.pathVariable("zoneId"));
+        UUID zoneId = PathVariableParser.uuid(request.pathVariable("zoneId"), "zoneId");
         return useCase.getVotingZone(zoneId)
                 .map(VotingLocationMapper.INSTANCE::toResponse)
                 .flatMap(response -> ServerResponse.ok()

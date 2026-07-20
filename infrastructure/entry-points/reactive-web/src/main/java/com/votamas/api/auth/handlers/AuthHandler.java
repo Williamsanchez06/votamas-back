@@ -2,6 +2,7 @@ package com.votamas.api.auth.handlers;
 
 import com.votamas.api.auth.dtos.LoginRequest;
 import com.votamas.api.auth.mappers.LoginMapper;
+import com.votamas.api.validation.RequestValidator;
 import com.votamas.usecase.login.LoginUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,9 +16,10 @@ import reactor.core.publisher.Mono;
 public class AuthHandler {
 
     private final LoginUseCase loginUseCase;
+    private final RequestValidator requestValidator;
 
     public Mono<ServerResponse> login(ServerRequest request) {
-        return request.bodyToMono(LoginRequest.class)
+        return requestValidator.body(request, LoginRequest.class)
                 .map(LoginMapper.INSTANCE::toLogin)
                 .flatMap(loginUseCase::execute)
                 .map(LoginMapper.INSTANCE::toLoginDTO)
