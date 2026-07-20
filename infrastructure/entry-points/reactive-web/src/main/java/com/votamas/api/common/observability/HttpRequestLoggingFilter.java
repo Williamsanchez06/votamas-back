@@ -1,4 +1,4 @@
-package com.votamas.api.observability;
+package com.votamas.api.common.observability;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

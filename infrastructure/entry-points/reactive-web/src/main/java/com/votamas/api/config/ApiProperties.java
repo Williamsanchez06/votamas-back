@@ -1,4 +1,4 @@
-package com.votamas.api.utils;
+package com.votamas.api.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

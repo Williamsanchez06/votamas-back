@@ -2,9 +2,9 @@ package com.votamas.api.potentialvoter.handlers;
 
 import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
-import com.votamas.api.utils.PaginationRequestParser;
-import com.votamas.api.utils.PathVariableParser;
-import com.votamas.api.validation.RequestValidator;
+import com.votamas.api.common.web.PaginationRequestParser;
+import com.votamas.api.common.web.PathVariableParser;
+import com.votamas.api.common.validation.RequestValidator;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

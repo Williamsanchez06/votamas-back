@@ -1,4 +1,4 @@
-package com.votamas.api.observability;
+package com.votamas.api.common.observability;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

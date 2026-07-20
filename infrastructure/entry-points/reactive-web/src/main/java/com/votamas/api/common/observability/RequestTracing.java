@@ -1,4 +1,4 @@
-package com.votamas.api.observability;
+package com.votamas.api.common.observability;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.web.server.ServerWebExchange;

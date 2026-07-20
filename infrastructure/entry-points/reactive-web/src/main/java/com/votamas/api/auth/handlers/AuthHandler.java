@@ -2,7 +2,7 @@ package com.votamas.api.auth.handlers;
 
 import com.votamas.api.auth.dtos.LoginRequest;
 import com.votamas.api.auth.mappers.LoginMapper;
-import com.votamas.api.validation.RequestValidator;
+import com.votamas.api.common.validation.RequestValidator;
 import com.votamas.usecase.login.LoginUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

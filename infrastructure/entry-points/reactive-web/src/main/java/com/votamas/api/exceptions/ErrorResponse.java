@@ -1,7 +1,7 @@
 package com.votamas.api.exceptions;
 
 import lombok.Builder;
-import com.votamas.api.validation.FieldValidationError;
+import com.votamas.api.common.validation.FieldValidationError;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package com.votamas.api.validation;
+package com.votamas.api.common.validation;
 
 import java.util.List;
 

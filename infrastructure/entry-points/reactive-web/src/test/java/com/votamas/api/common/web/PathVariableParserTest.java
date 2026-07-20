@@ -1,6 +1,6 @@
-package com.votamas.api.utils;
+package com.votamas.api.common.web;
 
-import com.votamas.api.validation.InvalidRequestException;
+import com.votamas.api.common.validation.InvalidRequestException;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

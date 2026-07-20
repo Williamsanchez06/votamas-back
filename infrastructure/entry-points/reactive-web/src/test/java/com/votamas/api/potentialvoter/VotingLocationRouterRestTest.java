@@ -2,7 +2,7 @@ package com.votamas.api.potentialvoter;
 
 import com.votamas.api.potentialvoter.handlers.VotingLocationHandler;
 import com.votamas.api.potentialvoter.routers.VotingLocationRouterRest;
-import com.votamas.api.utils.ApiProperties;
+import com.votamas.api.config.ApiProperties;
 import com.votamas.model.potentialvoter.VotingZone;
 import com.votamas.model.potentialvoter.VotingZoneDetails;
 import com.votamas.usecase.potentialvoter.VotingLocationUseCase;

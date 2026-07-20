@@ -1,6 +1,6 @@
 package com.votamas.api.user.dtos;
 
-import com.votamas.api.validation.OnCreate;
+import com.votamas.api.common.validation.OnCreate;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -2,8 +2,8 @@ package com.votamas.api.config;
 
 import com.votamas.api.auth.handlers.AuthHandler;
 import com.votamas.api.auth.routers.AuthRouterRest;
-import com.votamas.api.utils.ApiProperties;
-import com.votamas.api.validation.RequestValidator;
+import com.votamas.api.config.ApiProperties;
+import com.votamas.api.common.validation.RequestValidator;
 import com.votamas.usecase.login.LoginUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.votamas.api.exceptions;
 
-import com.votamas.api.observability.RequestTracing;
+import com.votamas.api.common.observability.RequestTracing;
 import com.votamas.model.exception.MessageError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;

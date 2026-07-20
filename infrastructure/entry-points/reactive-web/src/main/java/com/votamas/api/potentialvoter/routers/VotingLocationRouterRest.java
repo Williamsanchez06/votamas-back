@@ -1,7 +1,7 @@
 package com.votamas.api.potentialvoter.routers;
 
 import com.votamas.api.potentialvoter.handlers.VotingLocationHandler;
-import com.votamas.api.utils.ApiProperties;
+import com.votamas.api.config.ApiProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

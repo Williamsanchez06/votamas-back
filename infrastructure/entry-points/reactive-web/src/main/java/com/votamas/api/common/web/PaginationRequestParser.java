@@ -1,8 +1,8 @@
-package com.votamas.api.utils;
+package com.votamas.api.common.web;
 
 import com.votamas.model.common.pagination.PageRequest;
-import com.votamas.api.validation.FieldValidationError;
-import com.votamas.api.validation.InvalidRequestException;
+import com.votamas.api.common.validation.FieldValidationError;
+import com.votamas.api.common.validation.InvalidRequestException;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.reactive.function.server.ServerRequest;
 

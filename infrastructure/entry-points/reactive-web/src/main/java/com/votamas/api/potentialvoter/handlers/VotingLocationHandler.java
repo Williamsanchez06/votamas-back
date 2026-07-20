@@ -2,7 +2,7 @@ package com.votamas.api.potentialvoter.handlers;
 
 import com.votamas.api.potentialvoter.dtos.VotingZoneResponseDTO;
 import com.votamas.api.potentialvoter.mappers.VotingLocationMapper;
-import com.votamas.api.utils.PathVariableParser;
+import com.votamas.api.common.web.PathVariableParser;
 import com.votamas.usecase.potentialvoter.VotingLocationUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

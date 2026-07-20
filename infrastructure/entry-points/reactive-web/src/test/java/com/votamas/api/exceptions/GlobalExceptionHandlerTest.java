@@ -1,6 +1,6 @@
 package com.votamas.api.exceptions;
 
-import com.votamas.api.observability.HttpRequestLoggingFilter;
+import com.votamas.api.common.observability.HttpRequestLoggingFilter;
 import com.votamas.model.exception.MessageError;
 import com.votamas.model.exception.NotFoundException;
 import com.votamas.model.exception.ValidationException;
