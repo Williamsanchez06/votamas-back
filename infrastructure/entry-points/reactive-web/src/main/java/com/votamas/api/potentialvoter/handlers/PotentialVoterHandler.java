@@ -2,7 +2,7 @@ package com.votamas.api.potentialvoter.handlers;
 
 import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
-import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.api.utils.PaginationRequestParser;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,10 +27,7 @@ public class PotentialVoterHandler {
     }
 
     public Mono<ServerResponse> getAllPotentialVoters(ServerRequest request) {
-        PageRequest pageRequest = new PageRequest(
-                queryInt(request, "page", PageRequest.DEFAULT_PAGE),
-                queryInt(request, "size", PageRequest.DEFAULT_SIZE)
-        );
+        var pageRequest = PaginationRequestParser.from(request);
         return potentialVoterUseCase.getAllPotentialVoters(pageRequest)
                 .map(result -> result.map(PotentialVoterMapper.INSTANCE::toResponse))
                 .flatMap(result -> ServerResponse.ok()
@@ -47,7 +44,4 @@ public class PotentialVoterHandler {
                 .flatMap(pv -> ServerResponse.ok().bodyValue(pv));
     }
 
-    private int queryInt(ServerRequest request, String name, int defaultValue) {
-        return request.queryParam(name).map(Integer::parseInt).orElse(defaultValue);
-    }
 }

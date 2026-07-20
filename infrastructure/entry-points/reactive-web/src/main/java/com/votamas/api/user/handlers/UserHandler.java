@@ -3,7 +3,7 @@ package com.votamas.api.user.handlers;
 import com.votamas.api.user.dtos.UserRequestDTO;
 import com.votamas.api.user.dtos.UserStatusRequestDTO;
 import com.votamas.api.user.mappers.UserMapper;
-import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.api.utils.PaginationRequestParser;
 import com.votamas.model.exception.ValidationException;
 import com.votamas.model.exception.MessageError;
 import com.votamas.usecase.user.UserUseCase;
@@ -34,10 +34,7 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> getAllUsers(ServerRequest request) {
-        PageRequest pageRequest = new PageRequest(
-                queryInt(request, "page", PageRequest.DEFAULT_PAGE),
-                queryInt(request, "size", PageRequest.DEFAULT_SIZE)
-        );
+        var pageRequest = PaginationRequestParser.from(request);
         return userUseCase.getAllUsers(pageRequest)
                 .map(result -> result.map(UserMapper.INSTANCE::toResponse))
                 .flatMap(result -> ServerResponse.ok()
@@ -65,10 +62,6 @@ public class UserHandler {
                         .contentType(APPLICATION_JSON)
                         .bodyValue(user))
                 .switchIfEmpty(Mono.error(new ValidationException(MessageError.VALIDATION_ERROR)));
-    }
-
-    private int queryInt(ServerRequest request, String name, int defaultValue) {
-        return request.queryParam(name).map(Integer::parseInt).orElse(defaultValue);
     }
 
 }

@@ -41,7 +41,7 @@ public class UserAdapter implements UserRepository {
     @Override
     public Mono<PageResult<User>> findAll(PageRequest pageRequest) {
         Query pageQuery = Query.empty()
-                .sort(Sort.by(Sort.Direction.ASC, "name", "surname"))
+                .sort(Sort.by(Sort.Direction.ASC, "name", "surname", "id"))
                 .limit(pageRequest.size())
                 .offset(pageRequest.offset());
 

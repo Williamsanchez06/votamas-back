@@ -7,6 +7,7 @@ import com.votamas.model.potentialvoter.gateways.PotentialVoterRepository;
 import com.votamas.r2dbc.potentialvoter.entities.PotentialVoterData;
 import com.votamas.r2dbc.potentialvoter.mapper.PotentialVoterRepositoryMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,7 @@ public class PotentialVoterAdapter implements PotentialVoterRepository {
     @Override
     public Mono<PageResult<PotentialVoter>> findAll(PageRequest pageRequest) {
         Query pageQuery = Query.empty()
+                .sort(Sort.by(Sort.Direction.ASC, "id"))
                 .limit(pageRequest.size())
                 .offset(pageRequest.offset());
 
