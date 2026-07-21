@@ -70,6 +70,19 @@ la aplicación.
 Las variables opcionales de importación son `IMPORT_MAX_FILE_SIZE_BYTES` e `IMPORT_MAX_ROWS`. El archivo XLSX se
 procesa en memoria con límites explícitos, por lo que estos valores deben ajustarse a la memoria del runtime.
 
+## Limitación de solicitudes
+
+El entry point aplica rate limiting a las rutas bajo `/api/v1`: 100 solicitudes por minuto de forma general,
+5 solicitudes por minuto para el login y 2 solicitudes por minuto para la importación masiva. Los límites se pueden
+ajustar mediante `RATE_LIMIT_DEFAULT_LIMIT_FOR_PERIOD`, `RATE_LIMIT_DEFAULT_LIMIT_REFRESH_PERIOD`,
+`RATE_LIMIT_LOGIN_LIMIT_FOR_PERIOD`, `RATE_LIMIT_LOGIN_LIMIT_REFRESH_PERIOD`,
+`RATE_LIMIT_IMPORT_LIMIT_FOR_PERIOD` y `RATE_LIMIT_IMPORT_LIMIT_REFRESH_PERIOD`. También están disponibles
+`RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX_BUCKETS` y
+`RATE_LIMIT_EXPIRE_AFTER_ACCESS`.
+
+Los usuarios autenticados se identifican con el `userId` verificado del JWT; las solicitudes públicas se identifican
+con la dirección remota de la conexión. No se confía en encabezados reenviados enviados directamente por el cliente.
+
 ## Base de datos
 
 `deployment/local_environment/create_BD.sql` recrea completamente la base y solo debe utilizarse en desarrollo local.

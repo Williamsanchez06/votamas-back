@@ -20,7 +20,8 @@ public class CorsConfig {
         config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
-        config.setExposedHeaders(List.of("X-Request-Id"));
+        config.setExposedHeaders(List.of(
+                "X-Request-Id", "X-RateLimit-Limit", "X-RateLimit-Remaining", "Retry-After"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

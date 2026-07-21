@@ -1,6 +1,7 @@
 package com.votamas.api.config;
 
 import com.votamas.api.exceptions.SecurityExceptionHandler;
+import com.votamas.api.common.ratelimit.RateLimitHandler;
 import com.votamas.model.exception.MessageError;
 import com.votamas.model.user.gateways.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,6 +40,7 @@ public class SecurityConfig {
                                                      SecurityExceptionHandler exceptionHandler,
                                                      CorsConfigurationSource corsConfigurationSource,
                                                      ApiProperties apiProperties,
+                                                     RateLimitHandler rateLimitHandler,
                                                      Converter<Jwt, Mono<AbstractAuthenticationToken>>
                                                              jwtAuthenticationConverter) {
         String basePath = apiProperties.baseApiPath;
@@ -51,6 +54,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .addFilterAfter(rateLimitHandler::filter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((exchange, exception) -> exceptionHandler.handle(
                                 exchange, MessageError.AUTHENTICATION_REQUIRED, exception))

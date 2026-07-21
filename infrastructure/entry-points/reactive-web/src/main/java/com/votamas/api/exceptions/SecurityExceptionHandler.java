@@ -4,6 +4,7 @@ import com.votamas.api.common.observability.RequestTracing;
 import com.votamas.model.exception.MessageError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -30,7 +31,22 @@ public class SecurityExceptionHandler {
                 requestId, exchange.getRequest().getMethod(), exchange.getRequest().getPath().value(),
                 status, error.code(), exception.getClass().getSimpleName(), sanitize(error.message()));
 
-        exchange.getResponse().setRawStatusCode(status);
+        return writeResponse(exchange, error);
+    }
+
+    public Mono<Void> handleRateLimit(ServerWebExchange exchange, long retryAfterSeconds, String policy) {
+        ApiError apiError = ApiError.RATE_LIMIT_EXCEEDED;
+        ErrorResponse error = new ErrorResponse(apiError.code(), apiError.message(), apiError.status(),
+                RequestTracing.requestId(exchange), Instant.now());
+        log.warn("event=RATE_LIMIT_EXCEEDED requestId={} method={} path={} status={} code={} policy={} retryAfter={}",
+                error.requestId(), exchange.getRequest().getMethod(), exchange.getRequest().getPath().value(),
+                error.status(), error.code(), policy, retryAfterSeconds);
+        exchange.getResponse().getHeaders().set(HttpHeaders.RETRY_AFTER, Long.toString(retryAfterSeconds));
+        return writeResponse(exchange, error);
+    }
+
+    private Mono<Void> writeResponse(ServerWebExchange exchange, ErrorResponse error) {
+        exchange.getResponse().setRawStatusCode(error.status());
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         DataBuffer body = exchange.getResponse().bufferFactory().wrap(objectMapper.writeValueAsBytes(error));
         return exchange.getResponse().writeWith(Mono.just(body));
