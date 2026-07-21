@@ -23,22 +23,17 @@ public class LoginUseCase {
 
         return userRepository.findByEmail(login.email())
                 .switchIfEmpty(Mono.error(new AuthenticationException(MessageError.INVALID_CREDENTIALS)))
+                .filter(user -> Boolean.TRUE.equals(user.active()))
+                .switchIfEmpty(Mono.error(new AuthenticationException(MessageError.INVALID_CREDENTIALS)))
                 .flatMap(user -> {
-
-                    boolean isValidPassword = passwordHasher.matches(login.password(), user.password());
-
-                    if (!isValidPassword) {
-                        return Mono.error(new AuthenticationException(MessageError.INVALID_CREDENTIALS));
-                    }
-
-                    return userPermissionRepository.findPermissionsByUserId(user.id())
-                            .collectList()
-                            .map(userPermissions -> {
-                                String accessToken = tokenGateway.generateAccessToken(user, userPermissions);
-                                return Token.builder()
-                                        .accessToken(accessToken)
-                                        .build();
-                            });
+                    return passwordHasher.matches(login.password(), user.password())
+                            .filter(Boolean.TRUE::equals)
+                            .switchIfEmpty(Mono.error(
+                                    new AuthenticationException(MessageError.INVALID_CREDENTIALS)))
+                            .then(userPermissionRepository.findPermissionsByUserId(user.id()).collectList())
+                            .map(userPermissions -> Token.builder()
+                                    .accessToken(tokenGateway.generateAccessToken(user, userPermissions))
+                                    .build());
                 });
     }
 }

@@ -28,6 +28,10 @@ class PostgreSQLConnectionPoolTest {
         when(properties.schema()).thenReturn("schema");
         when(properties.username()).thenReturn("username");
         when(properties.password()).thenReturn("password");
+        when(properties.initialSize()).thenReturn(0);
+        when(properties.maxSize()).thenReturn(5);
+        when(properties.maxIdleTimeMinutes()).thenReturn(10);
+        when(properties.maxAcquireTimeSeconds()).thenReturn(5);
     }
 
     @Test

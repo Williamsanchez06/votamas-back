@@ -1,6 +1,7 @@
 package com.votamas.api.config;
 
 import com.votamas.api.auth.handlers.AuthHandler;
+import com.votamas.api.auth.mappers.LoginMapperImpl;
 import com.votamas.api.auth.routers.AuthRouterRest;
 import com.votamas.api.config.ApiProperties;
 import com.votamas.api.common.validation.RequestValidator;
@@ -12,9 +13,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
-@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class, ApiProperties.class,
-        RequestValidator.class})
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class, LoginMapperImpl.class,
+        ApiProperties.class, RequestValidator.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {
@@ -27,6 +32,8 @@ class ConfigTest {
 
     @Test
     void corsConfigurationShouldAllowOrigins() {
+        when(loginUseCase.execute(any())).thenReturn(Mono.empty());
+
         webTestClient.post()
                 .uri("/api/v1/auth/login")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)

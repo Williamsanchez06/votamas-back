@@ -13,8 +13,10 @@ public enum MessageError {
     NO_USER_FOUND(Constants.ERROR_404, "Usuario no encontrado"),
     NO_POTENTIAL_VOTER_FOUND(Constants.ERROR_404, "Posible Votante no encontrado"),
     NO_VOTING_ZONE_FOUND(Constants.ERROR_404, "Zona de votación no encontrada"),
+    NO_VOTING_TABLE_FOUND(Constants.ERROR_404, "Mesa de votación no encontrada"),
     INVALID_SPREADSHEET(Constants.ERROR_400, "El archivo XLSX no es válido"),
     MISSING_SPREADSHEET_HEADERS(Constants.ERROR_400, "El archivo no contiene todos los encabezados obligatorios"),
+    SPREADSHEET_ROW_LIMIT_EXCEEDED(Constants.ERROR_400, "El archivo supera la cantidad máxima de filas permitida"),
     EMAIL_ALREADY_REGISTERED(Constants.ERROR_409, "El email ya está registrado"),
     ID_ALREADY_REGISTERED(Constants.ERROR_409, "La identificación ya esta registrada");
 

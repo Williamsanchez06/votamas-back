@@ -40,6 +40,7 @@ SET search_path TO vota_mas;
 \i schemas/1_Tables/09_polling_places.sql
 \i schemas/1_Tables/10_voting_tables.sql
 \i schemas/1_Tables/11_potential_voters.sql
+\i schemas/1_Tables/12_audit_triggers.sql
 
 \echo '=========================================='
 \echo 'INSERTANDO DATOS'

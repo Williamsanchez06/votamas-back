@@ -20,7 +20,7 @@ CREATE TABLE vota_mas.potential_voters
         FOREIGN KEY (assigned_leader_id)
         REFERENCES vota_mas.users(user_id)
         ON UPDATE CASCADE
-        ON DELETE SET NULL
+        ON DELETE RESTRICT
 );
 
 CREATE INDEX idx_potential_voters_voting_table_id

@@ -20,22 +20,21 @@ public class UserPermissionAdapter implements UserPermissionRepository {
         return databaseClient.sql("""
                 SELECT
                     r.name AS role,
-                    m.name AS module,
-                    string_agg(p.name, ', ' ORDER BY p.name) AS permissions
-                FROM vota_mas.users u
-                INNER JOIN vota_mas.user_role ur ON u.user_id = ur.user_id
-                INNER JOIN vota_mas.role r ON ur.role_id = r.role_id
-                INNER JOIN vota_mas.role_permission rp ON r.role_id = rp.role_id
-                INNER JOIN vota_mas.permission p ON rp.permission_id = p.permission_id
-                INNER JOIN vota_mas.module m ON p.module_id = m.module_id
+                    p.name AS permission
+                FROM users u
+                INNER JOIN user_role ur ON u.user_id = ur.user_id
+                INNER JOIN role r ON ur.role_id = r.role_id
+                INNER JOIN role_permission rp ON r.role_id = rp.role_id
+                INNER JOIN permission p ON rp.permission_id = p.permission_id
                 WHERE u.user_id = :userId
-                GROUP BY r.name, m.name
+                  AND u.active = TRUE
+                  AND r.is_active = TRUE
+                ORDER BY r.name, p.name
                 """)
                 .bind("userId", userId)
                 .map((row, metadata) -> UserPermission.builder()
                         .role(row.get("role", String.class))
-                        .module(row.get("module", String.class))
-                        .permissions(row.get("permissions", String.class))
+                        .permission(row.get("permission", String.class))
                         .build())
                 .all();
     }

@@ -29,7 +29,6 @@ subprojects {
 
     dependencies {
         implementation 'io.projectreactor:reactor-core'
-        implementation 'io.projectreactor.addons:reactor-extra'
 
         testImplementation "io.projectreactor.tools:blockhound-junit-platform:${blockHoundVersion}"
 

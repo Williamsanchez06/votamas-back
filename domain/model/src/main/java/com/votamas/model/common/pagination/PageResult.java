@@ -5,15 +5,15 @@ import java.util.function.Function;
 
 public record PageResult<T>(List<T> content, int page, int size, long totalElements,
                             int totalPages) {
-    public static <T> PageResult<T> of(List<T> content, PageRequest request, long totalElements) {
+    public static <T> PageResult<T> of(List<T> content, PageQuery query, long totalElements) {
         if (totalElements < 0) {
             throw new IllegalArgumentException("El total de elementos no puede ser negativo");
         }
-        long pages = totalElements / request.size();
-        if (totalElements % request.size() != 0) {
+        long pages = totalElements / query.size();
+        if (totalElements % query.size() != 0) {
             pages++;
         }
-        return new PageResult<>(List.copyOf(content), request.page(), request.size(), totalElements,
+        return new PageResult<>(List.copyOf(content), query.page(), query.size(), totalElements,
                 Math.toIntExact(pages));
     }
 

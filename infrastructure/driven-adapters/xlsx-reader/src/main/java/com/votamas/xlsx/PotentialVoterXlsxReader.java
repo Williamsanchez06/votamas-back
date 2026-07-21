@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -32,13 +33,19 @@ public class PotentialVoterXlsxReader implements PotentialVoterSpreadsheetReader
     private static final String IDENTIFICATION = "identificacion";
     private static final String FIRST_NAME = "nombres";
     private static final String LAST_NAME = "apellidos";
-    private static final String NEIGHBORHOOD = "barrio";
     private static final String VOTING_ZONE = "comuna";
     private static final String POLLING_PLACE = "lugar de votacion";
     private static final String TABLE_NUMBER = "mesa de votacion";
     private static final Set<String> REQUIRED_HEADERS = Set.of(
-            IDENTIFICATION, FIRST_NAME, LAST_NAME, NEIGHBORHOOD,
-            VOTING_ZONE, POLLING_PLACE, TABLE_NUMBER);
+            IDENTIFICATION, FIRST_NAME, LAST_NAME, VOTING_ZONE,
+            POLLING_PLACE, TABLE_NUMBER);
+
+    private final int maxRows;
+
+    public PotentialVoterXlsxReader(
+            @Value("${imports.potential-voters.max-rows:5000}") int maxRows) {
+        this.maxRows = maxRows;
+    }
 
     @Override
     public Mono<PotentialVoterImportData> read(byte[] content) {
@@ -74,12 +81,14 @@ public class PotentialVoterXlsxReader implements PotentialVoterSpreadsheetReader
                     skippedRows++;
                     continue;
                 }
+                if (rows.size() >= maxRows) {
+                    throw new ValidationException(MessageError.SPREADSHEET_ROW_LIMIT_EXCEEDED);
+                }
                 rows.add(new PotentialVoterImportRow(
                         index + 1,
                         value(row, columns.get(IDENTIFICATION), formatter, evaluator),
                         value(row, columns.get(FIRST_NAME), formatter, evaluator),
                         value(row, columns.get(LAST_NAME), formatter, evaluator),
-                        value(row, columns.get(NEIGHBORHOOD), formatter, evaluator),
                         value(row, columns.get(VOTING_ZONE), formatter, evaluator),
                         value(row, columns.get(POLLING_PLACE), formatter, evaluator),
                         value(row, columns.get(TABLE_NUMBER), formatter, evaluator)

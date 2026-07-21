@@ -8,7 +8,9 @@ echo      INICIANDO CONFIGURACION DB
 echo ==========================================
 echo.
 
-set PGPASSWORD=12345
+if not defined PGPASSWORD (
+    set /p PGPASSWORD=Ingresa la contrasena del usuario postgres:
+)
 set "PG_BIN=C:\Program Files\PostgreSQL\18\bin"
 
 if not exist "%PG_BIN%\psql.exe" (

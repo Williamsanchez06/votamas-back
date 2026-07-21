@@ -4,7 +4,8 @@ CREATE TABLE vota_mas.role
     created_at TIMESTAMP(6) NOT NULL DEFAULT now(),
     updated_at TIMESTAMP(6) NOT NULL DEFAULT now(),
     is_active  BOOLEAN      NOT NULL,
-    name       VARCHAR(100) NOT NULL
+    name       VARCHAR(100) NOT NULL,
+    CONSTRAINT uq_role_name UNIQUE (name)
 );
 
 CREATE TABLE vota_mas.user_role

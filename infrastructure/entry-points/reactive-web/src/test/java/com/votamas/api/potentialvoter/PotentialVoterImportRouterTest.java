@@ -7,6 +7,7 @@ import com.votamas.api.common.web.AuthenticatedUserIdResolver;
 import com.votamas.api.config.ApiProperties;
 import com.votamas.api.exceptions.GlobalExceptionHandler;
 import com.votamas.api.potentialvoter.handlers.PotentialVoterHandler;
+import com.votamas.api.potentialvoter.mappers.PotentialVoterMapperImpl;
 import com.votamas.api.potentialvoter.routers.PotentialVoterRouterRest;
 import com.votamas.model.potentialvoter.PotentialVoterImportResult;
 import com.votamas.usecase.potentialvoter.ImportPotentialVotersUseCase;
@@ -32,7 +33,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {PotentialVoterRouterRest.class, PotentialVoterHandler.class, ApiProperties.class})
+@ContextConfiguration(classes = {PotentialVoterRouterRest.class, PotentialVoterHandler.class,
+        PotentialVoterMapperImpl.class, ApiProperties.class})
 @WebFluxTest
 @Import({GlobalExceptionHandler.class, HttpRequestLoggingFilter.class,
         RequestValidator.class, PotentialVoterImportRequestExtractor.class})

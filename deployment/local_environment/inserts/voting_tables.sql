@@ -1,5 +1,6 @@
 
-INSERT INTO vota_mas.voting_tables (polling_place_id, table_number) VALUES
+WITH table_totals (polling_place_id, total_tables) AS (
+VALUES
 ((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 01' AND pp.name = '01 - COL SAN JOSE SEDE MERCEDES ABREGO'), 35),
 ((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 01' AND pp.name = '02 - COL SAGRADO SEDE ANTONIA SANTO'), 33),
 ((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 01' AND pp.name = '03 - COL SAGRADO CORAZON DE JESUS'), 52),
@@ -89,4 +90,10 @@ INSERT INTO vota_mas.voting_tables (polling_place_id, table_number) VALUES
 ((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 99' AND pp.name = '27 - RICAURTE'), 2),
 ((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 99' AND pp.name = '37 - SAN FAUSTINO'), 4),
 ((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 99' AND pp.name = '45 - EL CARMEN DE TONCHALA'), 2),
-((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 99' AND pp.name = '53 - SAN PEDRO'), 3);
+((SELECT pp.polling_place_id FROM vota_mas.polling_places pp JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id WHERE vz.name = 'ZONA 99' AND pp.name = '53 - SAN PEDRO'), 3)
+)
+INSERT INTO vota_mas.voting_tables (polling_place_id, table_number)
+SELECT totals.polling_place_id, table_number
+FROM table_totals totals
+CROSS JOIN LATERAL generate_series(1, totals.total_tables) AS table_number
+ON CONFLICT (polling_place_id, table_number) DO NOTHING;

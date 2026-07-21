@@ -1,6 +1,7 @@
 package com.votamas.api.potentialvoter.mappers;
 
-import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterCreateRequestDTO;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterUpdateRequestDTO;
 import com.votamas.api.potentialvoter.dtos.PotentialVoterResponseDTO;
 import com.votamas.api.potentialvoter.dtos.PollingPlaceResponseDTO;
 import com.votamas.api.potentialvoter.dtos.VotingTableResponseDTO;
@@ -16,17 +17,23 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
 public interface PotentialVoterMapper {
-    PotentialVoterMapper INSTANCE = Mappers.getMapper(PotentialVoterMapper.class);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
+    @Mapping(target = "assignedLeaderId", ignore = true)
+    PotentialVoter toPotentialVoter(PotentialVoterCreateRequestDTO request);
 
-    PotentialVoter toPotentialVoter(PotentialVoterRequestDTO request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "identification", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
+    @Mapping(target = "assignedLeaderId", ignore = true)
+    PotentialVoter toPotentialVoter(PotentialVoterUpdateRequestDTO request);
 
     @Mapping(target = "votingTable", source = "votingTableId")
     PotentialVoterResponseDTO toResponse(PotentialVoter voter);

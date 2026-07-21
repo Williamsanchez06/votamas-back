@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Builder(toBuilder = true)
-@Table(schema = "vota_mas", name = "potential_voters")
+@Table(name = "potential_voters")
 public record PotentialVoterData(
         @Id @Column("potential_voter_id") UUID id,
         @Column("identification") String identification,

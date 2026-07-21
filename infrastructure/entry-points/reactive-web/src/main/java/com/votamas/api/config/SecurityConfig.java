@@ -2,12 +2,14 @@ package com.votamas.api.config;
 
 import com.votamas.api.exceptions.SecurityExceptionHandler;
 import com.votamas.model.exception.MessageError;
+import com.votamas.model.user.gateways.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +18,7 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,21 +27,28 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    public static final String PATH_USER = "/api/v1/user/**";
-    public static final String PATH_USER_STATUS = "/api/v1/user/*/status";
-    public static final String PATH_POTENTIAL_VOTER = "/api/v1/potential-voter/**";
-    public static final String PATH_VOTING_ZONE = "/api/v1/voting-zones/**";
-
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-                                                     SecurityExceptionHandler exceptionHandler) {
+                                                     SecurityExceptionHandler exceptionHandler,
+                                                     CorsConfigurationSource corsConfigurationSource,
+                                                     ApiProperties apiProperties,
+                                                     Converter<Jwt, Mono<AbstractAuthenticationToken>>
+                                                             jwtAuthenticationConverter) {
+        String basePath = apiProperties.baseApiPath;
+        String userPath = basePath.concat("/user/**");
+        String userStatusPath = basePath.concat("/user/*/status");
+        String potentialVoterPath = basePath.concat("/potential-voter/**");
+        String votingZonePath = basePath.concat("/voting-zones/**");
+
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .exceptionHandling(errors -> errors
@@ -47,20 +57,22 @@ public class SecurityConfig {
                         .accessDeniedHandler((exchange, exception) -> exceptionHandler.handle(
                                 exchange, MessageError.ACCESS_DENIED, exception)))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/v1/auth/login", "/actuator/health", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .pathMatchers(HttpMethod.GET, PATH_USER).hasAuthority("GET_USER")
-                        .pathMatchers(HttpMethod.POST, PATH_USER).hasAuthority("CREATE_USER")
-                        .pathMatchers(HttpMethod.PUT, PATH_USER).hasAuthority("EDIT_USER")
-                        .pathMatchers(HttpMethod.PATCH, PATH_USER_STATUS).hasAuthority("CHANGE_USER_STATUS")
-                        .pathMatchers(HttpMethod.PATCH, PATH_USER).hasAuthority("EDIT_USER")
-                        .pathMatchers(HttpMethod.GET, PATH_POTENTIAL_VOTER).hasAuthority("GET_POTENTIAL_VOTER")
-                        .pathMatchers(HttpMethod.GET, PATH_VOTING_ZONE).hasAuthority("GET_POTENTIAL_VOTER")
-                        .pathMatchers(HttpMethod.POST, PATH_POTENTIAL_VOTER).hasAuthority("CREATE_POTENTIAL_VOTER")
-                        .pathMatchers(HttpMethod.PUT, PATH_POTENTIAL_VOTER).hasAuthority("EDIT_POTENTIAL_VOTER")
-                        .anyExchange().authenticated()
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .pathMatchers(basePath.concat("/auth/login"), "/actuator/health").permitAll()
+                        .pathMatchers("/actuator/prometheus").authenticated()
+                        .pathMatchers(HttpMethod.GET, userPath).hasAuthority("GET_USER")
+                        .pathMatchers(HttpMethod.POST, userPath).hasAuthority("CREATE_USER")
+                        .pathMatchers(HttpMethod.PUT, userPath).hasAuthority("EDIT_USER")
+                        .pathMatchers(HttpMethod.PATCH, userStatusPath).hasAuthority("CHANGE_USER_STATUS")
+                        .pathMatchers(HttpMethod.PATCH, userPath).hasAuthority("EDIT_USER")
+                        .pathMatchers(HttpMethod.GET, potentialVoterPath).hasAuthority("GET_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.GET, votingZonePath).hasAuthority("GET_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.POST, potentialVoterPath).hasAuthority("CREATE_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.PUT, potentialVoterPath).hasAuthority("EDIT_POTENTIAL_VOTER")
+                        .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
                 )
                 .build();
     }
@@ -87,7 +99,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter() {
+    Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter(
+            UserRepository userRepository) {
         ReactiveJwtAuthenticationConverter converter = new ReactiveJwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             List<String> authorities = jwt.getClaimAsStringList("authorities");
@@ -100,6 +113,19 @@ public class SecurityConfig {
                             .toList()
             );
         });
-        return converter;
+        return jwt -> authenticatedUserId(jwt)
+                .flatMap(userRepository::isActiveById)
+                .filter(Boolean.TRUE::equals)
+                .switchIfEmpty(Mono.error(new BadCredentialsException("Usuario inactivo o inexistente")))
+                .then(converter.convert(jwt));
+    }
+
+    private Mono<UUID> authenticatedUserId(Jwt jwt) {
+        String userId = jwt.getClaimAsString("userId");
+        try {
+            return Mono.just(UUID.fromString(userId));
+        } catch (IllegalArgumentException | NullPointerException exception) {
+            return Mono.error(new BadCredentialsException("Token sin identificador de usuario válido"));
+        }
     }
 }

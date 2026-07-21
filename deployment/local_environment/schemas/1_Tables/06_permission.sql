@@ -6,6 +6,7 @@ CREATE TABLE vota_mas.permission
     name          VARCHAR(255) NOT NULL,
     title         VARCHAR(255) NOT NULL,
     module_id     UUID         NOT NULL,
+    CONSTRAINT uq_permission_name UNIQUE (name),
     CONSTRAINT fk_permission_module FOREIGN KEY (module_id)
         REFERENCES vota_mas.module(module_id)
 );

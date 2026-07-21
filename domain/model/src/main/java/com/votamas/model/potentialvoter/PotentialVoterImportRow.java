@@ -5,7 +5,6 @@ public record PotentialVoterImportRow(
         String identification,
         String firstName,
         String lastName,
-        String neighborhood,
         String votingZoneName,
         String pollingPlaceName,
         String tableNumber

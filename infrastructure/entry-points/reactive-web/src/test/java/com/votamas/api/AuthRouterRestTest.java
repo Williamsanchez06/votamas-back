@@ -1,6 +1,7 @@
 package com.votamas.api;
 
 import com.votamas.api.auth.handlers.AuthHandler;
+import com.votamas.api.auth.mappers.LoginMapperImpl;
 import com.votamas.api.auth.routers.AuthRouterRest;
 import com.votamas.api.config.ApiProperties;
 import com.votamas.api.exceptions.GlobalExceptionHandler;
@@ -22,7 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class, ApiProperties.class})
+@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class, LoginMapperImpl.class,
+        ApiProperties.class})
 @WebFluxTest
 @Import({GlobalExceptionHandler.class, HttpRequestLoggingFilter.class, RequestValidator.class})
 class AuthRouterRestTest {

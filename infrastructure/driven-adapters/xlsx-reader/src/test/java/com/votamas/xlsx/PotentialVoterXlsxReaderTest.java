@@ -11,32 +11,30 @@ import java.io.ByteArrayOutputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PotentialVoterXlsxReaderTest {
-    private final PotentialVoterXlsxReader reader = new PotentialVoterXlsxReader();
+    private final PotentialVoterXlsxReader reader = new PotentialVoterXlsxReader(5000);
 
     @Test
     void shouldReadStringsNumbersFormulasAndSkipEmptyRows() throws Exception {
         byte[] file;
-        try (var workbook = workbookWithHeaders("Identificación", " NOMBRES ", "apellidos", "barrio",
+        try (var workbook = workbookWithHeaders("Identificación", " NOMBRES ", "apellidos",
                 "COMUNA", "lugar de votación", "mesa de votacion")) {
             var sheet = workbook.getSheetAt(0);
             var numeric = sheet.createRow(1);
             numeric.createCell(0).setCellValue(1090123456d);
             numeric.createCell(1).setCellValue("Ana");
             numeric.createCell(2).setCellValue("Pérez");
-            numeric.createCell(3).setCellValue("Centro");
-            numeric.createCell(4).setCellValue("Comuna 1");
-            numeric.createCell(5).setCellValue("Colegio Central");
-            numeric.createCell(6).setCellValue(12);
+            numeric.createCell(3).setCellValue("Comuna 1");
+            numeric.createCell(4).setCellValue("Colegio Central");
+            numeric.createCell(5).setCellValue(12);
 
             sheet.createRow(2);
             var text = sheet.createRow(3);
             text.createCell(0, CellType.STRING).setCellValue("00123");
             text.createCell(1).setCellValue("Luis");
             text.createCell(2).setCellValue("Díaz");
-            text.createCell(3).setCellValue("Norte");
-            text.createCell(4).setCellValue("Comuna 2");
-            text.createCell(5).setCellValue("Escuela Norte");
-            text.createCell(6, CellType.STRING).setCellValue("7");
+            text.createCell(3).setCellValue("Comuna 2");
+            text.createCell(4).setCellValue("Escuela Norte");
+            text.createCell(5, CellType.STRING).setCellValue("7");
             file = bytes(workbook);
         }
 

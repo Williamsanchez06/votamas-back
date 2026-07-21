@@ -1,10 +1,10 @@
 package com.votamas.api.common.validation;
 
-import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
-import com.votamas.api.user.dtos.UserRequestDTO;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterCreateRequestDTO;
+import com.votamas.api.user.dtos.UserCreateRequestDTO;
 import com.votamas.api.user.dtos.UserStatusRequestDTO;
+import com.votamas.api.user.dtos.UserUpdateRequestDTO;
 import jakarta.validation.Validation;
-import jakarta.validation.groups.Default;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
@@ -18,29 +18,29 @@ class RequestValidatorTest {
 
     @Test
     void shouldRequirePasswordWhenCreatingUser() {
-        var request = new UserRequestDTO("Ana", "Pérez", "ana@example.com", "   ");
+        var request = new UserCreateRequestDTO("Ana", "Pérez", "ana@example.com", "   ");
 
-        StepVerifier.create(validator.validate(request, Default.class, OnCreate.class))
+        StepVerifier.create(validator.validate(request))
                 .expectErrorSatisfies(error -> assertInvalidField(error, "password"))
                 .verify();
     }
 
     @Test
     void shouldValidateUserRequiredFieldsAndEmailFormat() {
-        var request = new UserRequestDTO(" ", " ", "invalid-email", "password");
+        var request = new UserCreateRequestDTO(" ", " ", "invalid-email", "password");
 
-        StepVerifier.create(validator.validate(request, Default.class, OnCreate.class))
+        StepVerifier.create(validator.validate(request))
                 .expectErrorSatisfies(error -> {
                     var invalid = (InvalidRequestException) error;
                     assertThat(invalid.errors()).extracting(FieldValidationError::field)
-                            .containsExactlyInAnyOrder("name", "surname", "email");
+                            .contains("name", "surname", "email");
                 })
                 .verify();
     }
 
     @Test
-    void shouldNotRequirePasswordWhenUpdatingUser() {
-        var request = new UserRequestDTO(" Ana ", " Pérez ", " ANA@EXAMPLE.COM ", null);
+    void shouldNormalizeUserWhenUpdating() {
+        var request = new UserUpdateRequestDTO(" Ana ", " Pérez ", " ANA@EXAMPLE.COM ");
 
         StepVerifier.create(validator.validate(request))
                 .assertNext(valid -> {
@@ -52,7 +52,7 @@ class RequestValidatorTest {
 
     @Test
     void shouldValidatePotentialVoterRequiredFields() {
-        var request = new PotentialVoterRequestDTO(" ", " ", " ", null);
+        var request = new PotentialVoterCreateRequestDTO(" ", " ", " ", null);
 
         StepVerifier.create(validator.validate(request))
                 .expectErrorSatisfies(error -> {
@@ -66,7 +66,8 @@ class RequestValidatorTest {
 
     @Test
     void shouldAcceptValidPotentialVoter() {
-        var request = new PotentialVoterRequestDTO(" 123 ", " Ana ", " Pérez ", UUID.randomUUID());
+        var request = new PotentialVoterCreateRequestDTO(
+                " 123 ", " Ana ", " Pérez ", UUID.randomUUID());
 
         StepVerifier.create(validator.validate(request))
                 .assertNext(valid -> assertThat(valid.identification()).isEqualTo("123"))

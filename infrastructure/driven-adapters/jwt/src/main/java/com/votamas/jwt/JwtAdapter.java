@@ -16,17 +16,16 @@ import java.util.stream.Collectors;
 @Component
 public class JwtAdapter implements TokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final SecretKey secretKey;
+    private final long expiration;
+    private final String issuer;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
-
-    @Value("${jwt.issuer}")
-    String issuer;
-
-    private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    public JwtAdapter(@Value("${jwt.secret}") String secretKey,
+                      @Value("${jwt.expiration}") long expiration,
+                      @Value("${jwt.issuer}") String issuer) {
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.expiration = expiration;
+        this.issuer = issuer;
     }
 
     @Override
@@ -40,9 +39,10 @@ public class JwtAdapter implements TokenProvider {
                 .collect(Collectors.toSet());
 
         Set<String> authorities = userPermissions.stream()
-                .flatMap(up -> Arrays.stream(up.permissions().split(",")))
+                .map(UserPermission::permission)
+                .filter(Objects::nonNull)
                 .map(String::trim)
-                .filter(s -> !s.isBlank())
+                .filter(permission -> !permission.isBlank())
                 .collect(Collectors.toSet());
 
         return Jwts.builder()
@@ -53,7 +53,7 @@ public class JwtAdapter implements TokenProvider {
                 .issuer(issuer)
                 .issuedAt(now)
                 .expiration(expiryDate)
-                .signWith(getKey())
+                .signWith(secretKey)
                 .compact();
     }
 }

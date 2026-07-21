@@ -17,12 +17,13 @@ public class AuthHandler {
 
     private final LoginUseCase loginUseCase;
     private final RequestValidator requestValidator;
+    private final LoginMapper loginMapper;
 
     public Mono<ServerResponse> login(ServerRequest request) {
         return requestValidator.body(request, LoginRequest.class)
-                .map(LoginMapper.INSTANCE::toLogin)
+                .map(loginMapper::toLogin)
                 .flatMap(loginUseCase::execute)
-                .map(LoginMapper.INSTANCE::toLoginDTO)
+                .map(loginMapper::toLoginDTO)
                 .flatMap(loginResponse -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(loginResponse)

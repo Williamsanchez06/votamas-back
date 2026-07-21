@@ -2,6 +2,7 @@ package com.votamas.model.potentialvoter.gateways;
 
 import com.votamas.model.potentialvoter.VotingZone;
 import com.votamas.model.potentialvoter.VotingZoneDetails;
+import com.votamas.model.potentialvoter.VotingTableReference;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,5 +13,7 @@ public interface VotingLocationRepository {
 
     Mono<VotingZoneDetails> findZoneDetailsById(UUID zoneId);
 
-    Mono<UUID> findVotingTableId(String votingZoneName, String pollingPlaceName, int tableNumber);
+    Mono<Boolean> existsVotingTableById(UUID votingTableId);
+
+    Flux<VotingTableReference> findAllVotingTableReferences();
 }

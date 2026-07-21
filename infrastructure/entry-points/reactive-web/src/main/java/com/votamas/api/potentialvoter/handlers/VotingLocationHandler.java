@@ -17,18 +17,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VotingLocationHandler {
     private final VotingLocationUseCase useCase;
+    private final VotingLocationMapper votingLocationMapper;
 
     public Mono<ServerResponse> getVotingZones(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(useCase.getVotingZones().map(VotingLocationMapper.INSTANCE::toResponse),
+                .body(useCase.getVotingZones().map(votingLocationMapper::toResponse),
                         VotingZoneResponseDTO.class);
     }
 
     public Mono<ServerResponse> getVotingZone(ServerRequest request) {
         UUID zoneId = PathVariableParser.uuid(request.pathVariable("zoneId"), "zoneId");
         return useCase.getVotingZone(zoneId)
-                .map(VotingLocationMapper.INSTANCE::toResponse)
+                .map(votingLocationMapper::toResponse)
                 .flatMap(response -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(response));

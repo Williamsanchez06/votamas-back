@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.UUID;
 
 @Builder (toBuilder = true)
-@Table(schema = "vota_mas", name = "users")
+@Table(name = "users")
 public record UserData(
         @Id @Column("user_id") UUID id,
         @Column("name") String name,

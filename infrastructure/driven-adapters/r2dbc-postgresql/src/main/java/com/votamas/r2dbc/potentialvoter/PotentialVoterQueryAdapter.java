@@ -1,6 +1,6 @@
 package com.votamas.r2dbc.potentialvoter;
 
-import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.common.pagination.PageQuery;
 import com.votamas.model.common.pagination.PageResult;
 import com.votamas.model.potentialvoter.PotentialVoterDetails;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterQueryRepository;
@@ -31,12 +31,12 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
                    pp.name AS polling_place_name,
                    vz.voting_zone_id,
                    vz.name AS voting_zone_name
-              FROM vota_mas.potential_voters pv
-              LEFT JOIN vota_mas.voting_tables vt
+              FROM potential_voters pv
+              INNER JOIN voting_tables vt
                      ON vt.voting_table_id = pv.voting_table_id
-              LEFT JOIN vota_mas.polling_places pp
+              INNER JOIN polling_places pp
                      ON pp.polling_place_id = vt.polling_place_id
-              LEFT JOIN vota_mas.voting_zones vz
+              INNER JOIN voting_zones vz
                      ON vz.voting_zone_id = pp.voting_zone_id
              ORDER BY pv.potential_voter_id
              LIMIT :limit OFFSET :offset
@@ -47,11 +47,11 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
     private final PotentialVoterDetailsMapper mapper;
 
     @Override
-    public Mono<PageResult<PotentialVoterDetails>> findAllWithVotingLocation(PageRequest pageRequest) {
+    public Mono<PageResult<PotentialVoterDetails>> findAllWithVotingLocation(PageQuery pageQuery) {
         Mono<java.util.List<PotentialVoterDetails>> content = databaseClient
                 .sql(FIND_PAGE_WITH_VOTING_LOCATION)
-                .bind("limit", pageRequest.size())
-                .bind("offset", pageRequest.offset())
+                .bind("limit", pageQuery.size())
+                .bind("offset", pageQuery.offset())
                 .mapProperties(PotentialVoterDetailsProjection.class)
                 .all()
                 .map(mapper::toDomain)
@@ -60,6 +60,6 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
         Mono<Long> total = template.count(Query.empty(), PotentialVoterData.class);
 
         return Mono.zip(content, total,
-                (voters, totalElements) -> PageResult.of(voters, pageRequest, totalElements));
+                (voters, totalElements) -> PageResult.of(voters, pageQuery, totalElements));
     }
 }

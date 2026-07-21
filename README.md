@@ -45,3 +45,33 @@ Los entry points representan los puntos de entrada de la aplicación o el inicio
 Este módulo es el más externo de la arquitectura, es el encargado de ensamblar los distintos módulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma automática, inyectando en éstos instancias concretas de las dependencias declaradas. Además inicia la aplicación (es el único módulo del proyecto donde encontraremos la función “public static void main(String[] args)”.
 
 **Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+
+## Configuración por entorno
+
+La aplicación no contiene credenciales por defecto. Antes de iniciarla se deben definir como mínimo:
+
+```text
+DB_HOST
+DB_PORT
+DB_NAME
+DB_SCHEMA
+DB_USERNAME
+DB_PASSWORD
+DB_SSL
+JWT_SECRET
+JWT_ISSUER
+CORS_ALLOWED_ORIGINS
+```
+
+`JWT_SECRET` debe ser una clave aleatoria de al menos 32 bytes. Para despliegues con escalado automático se recomienda
+mantener `DB_POOL_INITIAL_SIZE=0` y un `DB_POOL_MAX_SIZE` bajo. La base de datos debe ubicarse en una región cercana a
+la aplicación.
+
+Las variables opcionales de importación son `IMPORT_MAX_FILE_SIZE_BYTES` e `IMPORT_MAX_ROWS`. El archivo XLSX se
+procesa en memoria con límites explícitos, por lo que estos valores deben ajustarse a la memoria del runtime.
+
+## Base de datos
+
+`deployment/local_environment/create_BD.sql` recrea completamente la base y solo debe utilizarse en desarrollo local.
+Para una base existente se deben ejecutar, en orden, los scripts ubicados en `deployment/migrations` antes de desplegar
+la nueva versión de la aplicación.

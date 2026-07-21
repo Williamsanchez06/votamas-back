@@ -6,7 +6,7 @@ import com.votamas.model.user.gateways.UserRepository;
 import com.votamas.model.exception.ConflictException;
 import com.votamas.model.exception.MessageError;
 import com.votamas.model.exception.NotFoundException;
-import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.common.pagination.PageQuery;
 import com.votamas.model.common.pagination.PageResult;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -26,18 +26,17 @@ public class UserUseCase {
                         return Mono.error(new ConflictException(MessageError.EMAIL_ALREADY_REGISTERED));
                     }
 
-                    String hashedPassword = passwordHasher.hash(user.password());
-
-                    User userWithHashedPassword = user.toBuilder()
-                            .password(hashedPassword)
-                            .build();
-
-                    return userRepository.save(userWithHashedPassword);
+                    return passwordHasher.hash(user.password())
+                            .map(hashedPassword -> user.toBuilder()
+                                    .password(hashedPassword)
+                                    .active(true)
+                                    .build())
+                            .flatMap(userRepository::save);
                 });
     }
 
-    public Mono<PageResult<User>> getAllUsers(PageRequest pageRequest) {
-        return userRepository.findAll(pageRequest);
+    public Mono<PageResult<User>> getAllUsers(PageQuery pageQuery) {
+        return userRepository.findAll(pageQuery);
     }
 
     public Mono<User> updateUser(UUID id, User user) {

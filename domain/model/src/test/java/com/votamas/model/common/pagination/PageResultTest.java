@@ -15,7 +15,7 @@ class PageResultTest {
 
     @Test
     void shouldBuildFirstPageUsingZeroBasedIndex() {
-        PageResult<Integer> result = PageResult.of(List.of(1, 2, 3), new PageRequest(0, 10), 23);
+        PageResult<Integer> result = PageResult.of(List.of(1, 2, 3), new PageQuery(0, 10), 23);
 
         assertEquals(0, result.page());
         assertEquals(10, result.size());
@@ -26,7 +26,7 @@ class PageResultTest {
 
     @Test
     void shouldCalculateIncompleteLastPage() {
-        PageResult<Integer> result = PageResult.of(List.of(21, 22, 23), new PageRequest(2, 10), 23);
+        PageResult<Integer> result = PageResult.of(List.of(21, 22, 23), new PageQuery(2, 10), 23);
 
         assertEquals(2, result.page());
         assertEquals(3, result.content().size());
@@ -35,7 +35,7 @@ class PageResultTest {
 
     @Test
     void shouldReturnZeroPagesWhenThereAreNoResults() {
-        PageResult<Integer> result = PageResult.of(List.of(), new PageRequest(0, 10), 0);
+        PageResult<Integer> result = PageResult.of(List.of(), new PageQuery(0, 10), 0);
 
         assertEquals(0, result.totalElements());
         assertEquals(0, result.totalPages());
@@ -44,22 +44,22 @@ class PageResultTest {
 
     @Test
     void shouldReturnOnePageWhenTotalIsLessThanSize() {
-        PageResult<Integer> result = PageResult.of(List.of(1, 2), new PageRequest(0, 10), 2);
+        PageResult<Integer> result = PageResult.of(List.of(1, 2), new PageQuery(0, 10), 2);
 
         assertEquals(1, result.totalPages());
     }
 
     @Test
     void shouldCalculateOffsetForPageZeroAndPageOne() {
-        assertEquals(0, new PageRequest(0, 10).offset());
-        assertEquals(10, new PageRequest(1, 10).offset());
+        assertEquals(0, new PageQuery(0, 10).offset());
+        assertEquals(10, new PageQuery(1, 10).offset());
     }
 
     @Test
     void shouldRejectInvalidPaginationValues() {
-        assertThrows(IllegalArgumentException.class, () -> new PageRequest(-1, 10));
-        assertThrows(IllegalArgumentException.class, () -> new PageRequest(0, 0));
-        assertThrows(IllegalArgumentException.class, () -> new PageRequest(0, 101));
+        assertThrows(IllegalArgumentException.class, () -> new PageQuery(-1, 10));
+        assertThrows(IllegalArgumentException.class, () -> new PageQuery(0, 0));
+        assertThrows(IllegalArgumentException.class, () -> new PageQuery(0, 101));
     }
 
     @Test
@@ -68,7 +68,7 @@ class PageResultTest {
                 .id(UUID.randomUUID())
                 .votingTable(new VotingTable(UUID.randomUUID(), null, 10))
                 .build();
-        PageResult<PotentialVoterDetails> result = PageResult.of(List.of(voter), new PageRequest(1, 10), 12);
+        PageResult<PotentialVoterDetails> result = PageResult.of(List.of(voter), new PageQuery(1, 10), 12);
 
         assertEquals(1, result.page());
         assertEquals(10, result.size());

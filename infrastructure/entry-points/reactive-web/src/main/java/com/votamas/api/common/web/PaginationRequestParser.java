@@ -1,6 +1,6 @@
 package com.votamas.api.common.web;
 
-import com.votamas.model.common.pagination.PageRequest;
+import com.votamas.model.common.pagination.PageQuery;
 import com.votamas.api.common.validation.FieldValidationError;
 import com.votamas.api.common.validation.InvalidRequestException;
 import lombok.experimental.UtilityClass;
@@ -11,16 +11,16 @@ import java.util.List;
 @UtilityClass
 public class PaginationRequestParser {
 
-    public static PageRequest from(ServerRequest request) {
-        int page = parseInteger(request, "page", PageRequest.DEFAULT_PAGE);
-        int size = parseInteger(request, "size", PageRequest.DEFAULT_SIZE);
+    public static PageQuery from(ServerRequest request) {
+        int page = parseInteger(request, "page", PageQuery.DEFAULT_PAGE);
+        int size = parseInteger(request, "size", PageQuery.DEFAULT_SIZE);
         if (page < 0) {
             throw invalid("page", "La página debe ser mayor o igual a 0");
         }
-        if (size < 1 || size > PageRequest.MAX_SIZE) {
-            throw invalid("size", "El tamaño debe estar entre 1 y " + PageRequest.MAX_SIZE);
+        if (size < 1 || size > PageQuery.MAX_SIZE) {
+            throw invalid("size", "El tamaño debe estar entre 1 y " + PageQuery.MAX_SIZE);
         }
-        return new PageRequest(page, size);
+        return new PageQuery(page, size);
     }
 
     private int parseInteger(ServerRequest request, String field, int defaultValue) {

@@ -1,6 +1,7 @@
 package com.votamas.api.potentialvoter.handlers;
 
-import com.votamas.api.potentialvoter.dtos.PotentialVoterRequestDTO;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterCreateRequestDTO;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterUpdateRequestDTO;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
 import com.votamas.api.common.web.PaginationRequestParser;
 import com.votamas.api.common.web.PathVariableParser;
@@ -27,20 +28,22 @@ public class PotentialVoterHandler {
     private final PotentialVoterImportRequestExtractor importRequestExtractor;
     private final ImportPotentialVotersUseCase importPotentialVotersUseCase;
     private final AuthenticatedUserIdResolver authenticatedUserIdResolver;
+    private final PotentialVoterMapper potentialVoterMapper;
 
     public Mono<ServerResponse> createPotentialVoter(ServerRequest request) {
-        return requestValidator.body(request, PotentialVoterRequestDTO.class)
-                .map(PotentialVoterMapper.INSTANCE::toPotentialVoter)
+        return requestValidator.body(request, PotentialVoterCreateRequestDTO.class)
+                .map(potentialVoterMapper::toPotentialVoter)
                 .zipWhen(ignored -> authenticatedUserIdResolver.resolve(request))
                 .map(tuple -> tuple.getT1().toBuilder().assignedLeaderId(tuple.getT2()).build())
                 .flatMap(potentialVoterUseCase::savePotentialVoter)
-                .flatMap(pv -> ServerResponse.ok().bodyValue(pv));
+                .map(potentialVoterMapper::toResponse)
+                .flatMap(pv -> ServerResponse.status(201).bodyValue(pv));
     }
 
     public Mono<ServerResponse> getAllPotentialVoters(ServerRequest request) {
         var pageRequest = PaginationRequestParser.from(request);
         return potentialVoterUseCase.getAllPotentialVoters(pageRequest)
-                .map(result -> result.map(PotentialVoterMapper.INSTANCE::toResponse))
+                .map(result -> result.map(potentialVoterMapper::toResponse))
                 .flatMap(result -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(result));
@@ -49,9 +52,10 @@ public class PotentialVoterHandler {
     public Mono<ServerResponse> updatePotentialVoter(ServerRequest request) {
         UUID id = PathVariableParser.uuid(request.pathVariable("id"), "id");
 
-        return requestValidator.body(request, PotentialVoterRequestDTO.class)
-                .map(PotentialVoterMapper.INSTANCE::toPotentialVoter)
+        return requestValidator.body(request, PotentialVoterUpdateRequestDTO.class)
+                .map(potentialVoterMapper::toPotentialVoter)
                 .flatMap(pv -> potentialVoterUseCase.updatePotentialVoter(id, pv))
+                .map(potentialVoterMapper::toResponse)
                 .flatMap(pv -> ServerResponse.ok().bodyValue(pv));
     }
 
@@ -60,7 +64,7 @@ public class PotentialVoterHandler {
                 .zipWhen(ignored -> authenticatedUserIdResolver.resolve(request))
                 .flatMap(tuple -> importPotentialVotersUseCase.execute(
                         tuple.getT1().content(), tuple.getT2()))
-                .map(PotentialVoterMapper.INSTANCE::toResponse)
+                .map(potentialVoterMapper::toResponse)
                 .flatMap(result -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(result));

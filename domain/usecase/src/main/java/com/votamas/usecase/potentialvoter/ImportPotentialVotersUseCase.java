@@ -1,5 +1,6 @@
 package com.votamas.usecase.potentialvoter;
 
+import com.votamas.model.exception.ConflictException;
 import com.votamas.model.exception.MessageError;
 import com.votamas.model.exception.NotFoundException;
 import com.votamas.model.potentialvoter.PotentialVoter;
@@ -8,6 +9,7 @@ import com.votamas.model.potentialvoter.PotentialVoterImportError;
 import com.votamas.model.potentialvoter.PotentialVoterImportResult;
 import com.votamas.model.potentialvoter.PotentialVoterImportRow;
 import com.votamas.model.potentialvoter.VotingTableLookupKey;
+import com.votamas.model.potentialvoter.VotingTableReference;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterRepository;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterSpreadsheetReader;
 import com.votamas.model.potentialvoter.gateways.VotingLocationRepository;
@@ -17,13 +19,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ImportPotentialVotersUseCase {
@@ -37,39 +39,63 @@ public class ImportPotentialVotersUseCase {
 
     public Mono<PotentialVoterImportResult> execute(byte[] content, UUID assignedLeaderId) {
         return userRepository.findById(assignedLeaderId)
+                .filter(user -> Boolean.TRUE.equals(user.active()))
                 .switchIfEmpty(Mono.error(new NotFoundException(MessageError.NO_USER_FOUND)))
                 .then(Mono.defer(() -> spreadsheetReader.read(content)))
                 .flatMap(data -> importRows(data, assignedLeaderId));
     }
 
     private Mono<PotentialVoterImportResult> importRows(PotentialVoterImportData data, UUID leaderId) {
-        Set<String> identifications = new HashSet<>();
-        Map<VotingTableLookupKey, Mono<UUID>> tableCache = new HashMap<>();
+        Set<String> requestedIdentifications = data.rows().stream()
+                .map(this::normalize)
+                .map(NormalizedRow::identification)
+                .filter(identification -> !identification.isBlank())
+                .collect(Collectors.toSet());
 
+        Mono<Set<String>> existingIdentifications = potentialVoterRepository
+                .findExistingIdentifications(requestedIdentifications)
+                .collect(Collectors.toSet());
+        Mono<Map<VotingTableLookupKey, UUID>> votingTables = votingLocationRepository
+                .findAllVotingTableReferences()
+                .collectMap(this::lookupKey, VotingTableReference::id);
+
+        return Mono.zip(existingIdentifications, votingTables)
+                .flatMap(context -> processRows(data, leaderId, context.getT1(), context.getT2()));
+    }
+
+    private Mono<PotentialVoterImportResult> processRows(
+            PotentialVoterImportData data,
+            UUID leaderId,
+            Set<String> existingIdentifications,
+            Map<VotingTableLookupKey, UUID> votingTables) {
+        Set<String> fileIdentifications = new HashSet<>();
         return Flux.fromIterable(data.rows())
-                .concatMap(row -> processRow(row, leaderId, identifications, tableCache))
+                .concatMap(row -> processRow(row, leaderId, fileIdentifications,
+                        existingIdentifications, votingTables))
                 .collectList()
                 .map(errors -> new PotentialVoterImportResult(
-                        data.rows().size(),
-                        data.rows().size() - errors.size(),
-                        errors.size(),
-                        data.skippedRows(),
-                        errors));
+                        data.rows().size(), data.rows().size() - errors.size(), errors.size(),
+                        data.skippedRows(), errors));
     }
 
     private Mono<PotentialVoterImportError> processRow(
             PotentialVoterImportRow row,
             UUID leaderId,
-            Set<String> identifications,
-            Map<VotingTableLookupKey, Mono<UUID>> tableCache) {
+            Set<String> fileIdentifications,
+            Set<String> existingIdentifications,
+            Map<VotingTableLookupKey, UUID> votingTables) {
         NormalizedRow normalized = normalize(row);
         List<String> validationErrors = validate(normalized);
         if (!validationErrors.isEmpty()) {
             return Mono.just(error(row, normalized.identification(), String.join("; ", validationErrors)));
         }
-        if (!identifications.add(normalized.identification())) {
+        if (!fileIdentifications.add(normalized.identification())) {
             return Mono.just(error(row, normalized.identification(),
                     "La identificación está duplicada dentro del archivo"));
+        }
+        if (existingIdentifications.contains(normalized.identification())) {
+            return Mono.just(error(row, normalized.identification(),
+                    "La identificación ya se encuentra registrada"));
         }
 
         int tableNumber = Integer.parseInt(normalized.tableNumber());
@@ -77,24 +103,15 @@ public class ImportPotentialVotersUseCase {
                 canonical(normalized.votingZoneName()),
                 canonical(normalized.pollingPlaceName()),
                 tableNumber);
+        UUID tableId = votingTables.get(key);
+        if (tableId == null) {
+            return Mono.just(tableNotFound(row, normalized, tableNumber));
+        }
 
-        return potentialVoterRepository.existsByIdentification(normalized.identification())
-                .flatMap(exists -> exists
-                        ? Mono.just(error(row, normalized.identification(),
-                                "La identificación ya se encuentra registrada"))
-                        : resolveTable(key, normalized, tableCache)
-                                .flatMap(tableId -> save(normalized, tableId, leaderId)
-                                        .thenReturn(RowOutcome.SUCCESS))
-                                .defaultIfEmpty(new RowOutcome(tableNotFound(row, normalized, tableNumber)))
-                                .flatMap(outcome -> outcome.error() == null
-                                        ? Mono.empty()
-                                        : Mono.just(outcome.error())));
-    }
-
-    private Mono<UUID> resolveTable(VotingTableLookupKey key, NormalizedRow row,
-                                    Map<VotingTableLookupKey, Mono<UUID>> cache) {
-        return cache.computeIfAbsent(key, ignored -> votingLocationRepository.findVotingTableId(
-                row.votingZoneName(), row.pollingPlaceName(), Integer.parseInt(row.tableNumber())).cache());
+        return save(normalized, tableId, leaderId)
+                .then(Mono.<PotentialVoterImportError>empty())
+                .onErrorResume(ConflictException.class, conflict -> Mono.just(error(
+                        row, normalized.identification(), conflict.getMessage())));
     }
 
     private Mono<PotentialVoter> save(NormalizedRow row, UUID tableId, UUID leaderId) {
@@ -153,7 +170,7 @@ public class ImportPotentialVotersUseCase {
     private NormalizedRow normalize(PotentialVoterImportRow row) {
         return new NormalizedRow(
                 clean(row.identification()), clean(row.firstName()), clean(row.lastName()),
-                clean(row.neighborhood()), clean(row.votingZoneName()),
+                clean(row.votingZoneName()),
                 clean(row.pollingPlaceName()), clean(row.tableNumber()));
     }
 
@@ -165,16 +182,17 @@ public class ImportPotentialVotersUseCase {
         return value.toLowerCase(Locale.ROOT);
     }
 
+    private VotingTableLookupKey lookupKey(VotingTableReference reference) {
+        return new VotingTableLookupKey(canonical(reference.votingZoneName()),
+                canonical(reference.pollingPlaceName()), reference.tableNumber());
+    }
+
     private PotentialVoterImportError error(PotentialVoterImportRow row, String identification, String message) {
         return new PotentialVoterImportError(row.rowNumber(), identification, message);
     }
 
     private record NormalizedRow(String identification, String firstName, String lastName,
-                                 String neighborhood, String votingZoneName,
+                                 String votingZoneName,
                                  String pollingPlaceName, String tableNumber) {
-    }
-
-    private record RowOutcome(PotentialVoterImportError error) {
-        private static final RowOutcome SUCCESS = new RowOutcome(null);
     }
 }

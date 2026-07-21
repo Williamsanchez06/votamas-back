@@ -1,8 +1,10 @@
 package com.votamas.model.auth.gateways;
 
+import reactor.core.publisher.Mono;
+
 public interface PasswordHasher {
 
-    String hash(String password);
+    Mono<String> hash(String password);
 
-    boolean matches(String rawPassword, String encodedPassword);
+    Mono<Boolean> matches(String rawPassword, String encodedPassword);
 }

@@ -2,6 +2,7 @@ package com.votamas.r2dbc.potentialvoter;
 
 import com.votamas.model.potentialvoter.VotingZone;
 import com.votamas.model.potentialvoter.VotingZoneDetails;
+import com.votamas.model.potentialvoter.VotingTableReference;
 import com.votamas.model.potentialvoter.gateways.VotingLocationRepository;
 import com.votamas.r2dbc.potentialvoter.mapper.VotingLocationDetailsMapper;
 import com.votamas.r2dbc.potentialvoter.projections.VotingLocationProjection;
@@ -19,7 +20,7 @@ public class VotingLocationAdapter implements VotingLocationRepository {
 
     private static final String FIND_ALL_ZONES = """
             SELECT voting_zone_id AS id, name
-              FROM vota_mas.voting_zones
+              FROM voting_zones
              ORDER BY name, voting_zone_id
             """;
 
@@ -30,25 +31,34 @@ public class VotingLocationAdapter implements VotingLocationRepository {
                    pp.name AS polling_place_name,
                    vt.voting_table_id,
                    vt.table_number
-              FROM vota_mas.voting_zones vz
-              LEFT JOIN vota_mas.polling_places pp
+              FROM voting_zones vz
+              LEFT JOIN polling_places pp
                      ON pp.voting_zone_id = vz.voting_zone_id
-              LEFT JOIN vota_mas.voting_tables vt
+              LEFT JOIN voting_tables vt
                      ON vt.polling_place_id = pp.polling_place_id
              WHERE vz.voting_zone_id = :zoneId
              ORDER BY pp.name, pp.polling_place_id, vt.table_number, vt.voting_table_id
             """;
 
-    private static final String FIND_VOTING_TABLE_ID = """
-            SELECT vt.voting_table_id
-              FROM vota_mas.voting_tables vt
-              INNER JOIN vota_mas.polling_places pp
+    private static final String EXISTS_VOTING_TABLE = """
+            SELECT EXISTS (
+                SELECT 1
+                  FROM voting_tables
+                 WHERE voting_table_id = :votingTableId
+            ) AS found
+            """;
+
+    private static final String FIND_ALL_VOTING_TABLE_REFERENCES = """
+            SELECT vt.voting_table_id AS id,
+                   vz.name AS voting_zone_name,
+                   pp.name AS polling_place_name,
+                   vt.table_number
+              FROM voting_tables vt
+              INNER JOIN polling_places pp
                       ON pp.polling_place_id = vt.polling_place_id
-              INNER JOIN vota_mas.voting_zones vz
+              INNER JOIN voting_zones vz
                       ON vz.voting_zone_id = pp.voting_zone_id
-             WHERE LOWER(TRIM(vz.name)) = LOWER(TRIM(:votingZoneName))
-               AND LOWER(TRIM(pp.name)) = LOWER(TRIM(:pollingPlaceName))
-               AND vt.table_number = :tableNumber
+             ORDER BY vz.name, pp.name, vt.table_number
             """;
 
     private final DatabaseClient databaseClient;
@@ -73,12 +83,17 @@ public class VotingLocationAdapter implements VotingLocationRepository {
     }
 
     @Override
-    public Mono<UUID> findVotingTableId(String votingZoneName, String pollingPlaceName, int tableNumber) {
-        return databaseClient.sql(FIND_VOTING_TABLE_ID)
-                .bind("votingZoneName", votingZoneName)
-                .bind("pollingPlaceName", pollingPlaceName)
-                .bind("tableNumber", tableNumber)
-                .mapValue(UUID.class)
+    public Mono<Boolean> existsVotingTableById(UUID votingTableId) {
+        return databaseClient.sql(EXISTS_VOTING_TABLE)
+                .bind("votingTableId", votingTableId)
+                .map((row, metadata) -> Boolean.TRUE.equals(row.get("found", Boolean.class)))
                 .one();
+    }
+
+    @Override
+    public Flux<VotingTableReference> findAllVotingTableReferences() {
+        return databaseClient.sql(FIND_ALL_VOTING_TABLE_REFERENCES)
+                .mapProperties(VotingTableReference.class)
+                .all();
     }
 }

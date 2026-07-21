@@ -9,5 +9,10 @@ public record PostgresqlConnectionProperties(
         String database,
         String schema,
         String username,
-        String password) {
+        String password,
+        boolean ssl,
+        int initialSize,
+        int maxSize,
+        int maxIdleTimeMinutes,
+        int maxAcquireTimeSeconds) {
 }

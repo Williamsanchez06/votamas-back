@@ -20,8 +20,4 @@ public class HttpStatusExceptionMap {
         return HTTP_STATUS_BY_CODE.getOrDefault(code, INTERNAL_SERVER_ERROR);
     }
 
-    public static int getDefaultStatus() {
-        return INTERNAL_SERVER_ERROR;
-    }
-
 }
