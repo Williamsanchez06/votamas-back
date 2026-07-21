@@ -3,7 +3,7 @@ package com.votamas.api.potentialvoter.handlers;
 import com.votamas.api.potentialvoter.dtos.PotentialVoterCreateRequestDTO;
 import com.votamas.api.potentialvoter.dtos.PotentialVoterUpdateRequestDTO;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
-import com.votamas.api.common.web.PaginationRequestParser;
+import com.votamas.api.potentialvoter.search.PotentialVoterSearchCriteriaParser;
 import com.votamas.api.common.web.PathVariableParser;
 import com.votamas.api.common.validation.RequestValidator;
 import com.votamas.api.common.web.PotentialVoterImportRequestExtractor;
@@ -41,8 +41,8 @@ public class PotentialVoterHandler {
     }
 
     public Mono<ServerResponse> getAllPotentialVoters(ServerRequest request) {
-        var pageRequest = PaginationRequestParser.from(request);
-        return potentialVoterUseCase.getAllPotentialVoters(pageRequest)
+        var criteria = PotentialVoterSearchCriteriaParser.from(request);
+        return potentialVoterUseCase.getAllPotentialVoters(criteria)
                 .map(result -> result.map(potentialVoterMapper::toResponse))
                 .flatMap(result -> ServerResponse.ok()
                         .contentType(APPLICATION_JSON)

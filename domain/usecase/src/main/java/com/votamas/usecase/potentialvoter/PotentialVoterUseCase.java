@@ -7,6 +7,7 @@ import com.votamas.model.exception.MessageError;
 import com.votamas.model.exception.NotFoundException;
 import com.votamas.model.potentialvoter.PotentialVoter;
 import com.votamas.model.potentialvoter.PotentialVoterDetails;
+import com.votamas.model.potentialvoter.PotentialVoterSearchCriteria;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterQueryRepository;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterRepository;
 import com.votamas.model.potentialvoter.gateways.VotingLocationRepository;
@@ -44,7 +45,11 @@ public class PotentialVoterUseCase {
     }
 
     public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(PageQuery pageQuery) {
-        return potentialVoterQueryRepository.findAllWithVotingLocation(pageQuery);
+        return getAllPotentialVoters(PotentialVoterSearchCriteria.withoutFilters(pageQuery));
+    }
+
+    public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(PotentialVoterSearchCriteria criteria) {
+        return potentialVoterQueryRepository.findAllWithVotingLocation(criteria);
     }
 
     public Mono<PotentialVoter> updatePotentialVoter(UUID id, PotentialVoter potentialVoter) {
