@@ -52,22 +52,21 @@ class RequestValidatorTest {
 
     @Test
     void shouldValidatePotentialVoterRequiredFields() {
-        var request = new PotentialVoterRequestDTO(" ", " ", " ", null, null);
+        var request = new PotentialVoterRequestDTO(" ", " ", " ", null);
 
         StepVerifier.create(validator.validate(request))
                 .expectErrorSatisfies(error -> {
                     var invalid = (InvalidRequestException) error;
                     assertThat(invalid.errors()).extracting(FieldValidationError::field)
                             .containsExactlyInAnyOrder("identification", "firstName", "lastName",
-                                    "votingTableId", "assignedLeaderId");
+                                    "votingTableId");
                 })
                 .verify();
     }
 
     @Test
     void shouldAcceptValidPotentialVoter() {
-        var request = new PotentialVoterRequestDTO(" 123 ", " Ana ", " Pérez ",
-                UUID.randomUUID(), UUID.randomUUID());
+        var request = new PotentialVoterRequestDTO(" 123 ", " Ana ", " Pérez ", UUID.randomUUID());
 
         StepVerifier.create(validator.validate(request))
                 .assertNext(valid -> assertThat(valid.identification()).isEqualTo("123"))

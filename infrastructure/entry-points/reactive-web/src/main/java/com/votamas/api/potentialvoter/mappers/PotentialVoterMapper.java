@@ -10,6 +10,8 @@ import com.votamas.model.potentialvoter.PotentialVoterDetails;
 import com.votamas.model.potentialvoter.PollingPlace;
 import com.votamas.model.potentialvoter.VotingTable;
 import com.votamas.model.potentialvoter.VotingZone;
+import com.votamas.model.potentialvoter.PotentialVoterImportResult;
+import com.votamas.api.potentialvoter.dtos.PotentialVoterImportResponseDTO;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,6 +32,8 @@ public interface PotentialVoterMapper {
     PotentialVoterResponseDTO toResponse(PotentialVoter voter);
 
     PotentialVoterResponseDTO toResponse(PotentialVoterDetails voter);
+
+    PotentialVoterImportResponseDTO toResponse(PotentialVoterImportResult result);
 
     @Mapping(target = "pollingPlace", source = "pollingPlace")
     VotingTableResponseDTO toResponse(VotingTable votingTable);

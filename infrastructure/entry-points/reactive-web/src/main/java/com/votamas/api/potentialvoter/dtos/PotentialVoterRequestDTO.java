@@ -16,9 +16,7 @@ public record PotentialVoterRequestDTO(
         @Size(max = 150, message = "El apellido no puede superar 150 caracteres")
         String lastName,
         @NotNull(message = "La mesa de votación es obligatoria")
-        UUID votingTableId,
-        @NotNull(message = "El líder asignado es obligatorio")
-        UUID assignedLeaderId
+        UUID votingTableId
 ) {
     public PotentialVoterRequestDTO {
         identification = trim(identification);

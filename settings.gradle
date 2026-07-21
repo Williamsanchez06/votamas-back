@@ -27,3 +27,5 @@ include ':jwt'
 project(':jwt').projectDir = file('./infrastructure/driven-adapters/jwt')
 include ':password'
 project(':password').projectDir = file('./infrastructure/driven-adapters/password')
+include ':xlsx-reader'
+project(':xlsx-reader').projectDir = file('./infrastructure/driven-adapters/xlsx-reader')

@@ -19,6 +19,7 @@ public class PotentialVoterRouterRest {
     public RouterFunction<ServerResponse> potentialVoterRouterFunction(PotentialVoterHandler handler) {
         return RouterFunctions.route()
                 .GET(apiProperties.baseApiPath.concat("/potential-voter"), handler::getAllPotentialVoters)
+                .POST(apiProperties.baseApiPath.concat("/potential-voter/import"), handler::importPotentialVoters)
                 .POST(apiProperties.baseApiPath.concat("/potential-voter"), handler::createPotentialVoter)
                 .PUT(apiProperties.baseApiPath.concat("/potential-voter/{id}"), handler::updatePotentialVoter)
                 .build();

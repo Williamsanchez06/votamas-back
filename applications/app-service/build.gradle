@@ -4,6 +4,7 @@ dependencies {
 	implementation project(':password')
 	implementation project(':jwt')
 	implementation project(':r2dbc-postgresql')
+	implementation project(':xlsx-reader')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':reactive-web')
     implementation project(':model')

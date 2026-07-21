@@ -35,3 +35,6 @@ jwt:
 entries:
   reactive-web:
     base-path-api: "/api/v1"
+imports:
+  potential-voters:
+    max-file-size-bytes: 10485760

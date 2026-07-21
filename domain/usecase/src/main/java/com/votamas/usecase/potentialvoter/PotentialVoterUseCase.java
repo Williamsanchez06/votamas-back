@@ -42,7 +42,7 @@ public class PotentialVoterUseCase {
                             .firstName(potentialVoter.firstName())
                             .lastName(potentialVoter.lastName())
                             .votingTableId(potentialVoter.votingTableId())
-                            .assignedLeaderId(potentialVoter.assignedLeaderId())
+                            .assignedLeaderId(existing.assignedLeaderId())
                             .build();
                     return potentialVoterRepository.save(updated);
                 });

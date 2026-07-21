@@ -39,6 +39,18 @@ public class VotingLocationAdapter implements VotingLocationRepository {
              ORDER BY pp.name, pp.polling_place_id, vt.table_number, vt.voting_table_id
             """;
 
+    private static final String FIND_VOTING_TABLE_ID = """
+            SELECT vt.voting_table_id
+              FROM vota_mas.voting_tables vt
+              INNER JOIN vota_mas.polling_places pp
+                      ON pp.polling_place_id = vt.polling_place_id
+              INNER JOIN vota_mas.voting_zones vz
+                      ON vz.voting_zone_id = pp.voting_zone_id
+             WHERE LOWER(TRIM(vz.name)) = LOWER(TRIM(:votingZoneName))
+               AND LOWER(TRIM(pp.name)) = LOWER(TRIM(:pollingPlaceName))
+               AND vt.table_number = :tableNumber
+            """;
+
     private final DatabaseClient databaseClient;
     private final VotingLocationDetailsMapper mapper;
 
@@ -58,5 +70,15 @@ public class VotingLocationAdapter implements VotingLocationRepository {
                 .collectList()
                 .filter(rows -> !rows.isEmpty())
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<UUID> findVotingTableId(String votingZoneName, String pollingPlaceName, int tableNumber) {
+        return databaseClient.sql(FIND_VOTING_TABLE_ID)
+                .bind("votingZoneName", votingZoneName)
+                .bind("pollingPlaceName", pollingPlaceName)
+                .bind("tableNumber", tableNumber)
+                .mapValue(UUID.class)
+                .one();
     }
 }

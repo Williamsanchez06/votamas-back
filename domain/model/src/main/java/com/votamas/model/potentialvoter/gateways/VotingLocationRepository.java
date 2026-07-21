@@ -11,4 +11,6 @@ public interface VotingLocationRepository {
     Flux<VotingZone> findAllZones();
 
     Mono<VotingZoneDetails> findZoneDetailsById(UUID zoneId);
+
+    Mono<UUID> findVotingTableId(String votingZoneName, String pollingPlaceName, int tableNumber);
 }
