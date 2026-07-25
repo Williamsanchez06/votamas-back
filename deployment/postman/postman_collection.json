@@ -1,0 +1,704 @@
+{
+  "info": {
+    "_postman_id": "f8a19885-c39f-4ee7-bdbf-f6a320e3f968",
+    "name": "VotaMás API",
+    "description": "Colección completa de la API VotaMás. Configure loginEmail y loginPassword, ejecute Autenticación > Iniciar sesión y el token JWT se guardará automáticamente. Las solicitudes protegidas heredan la autenticación Bearer de la colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('La respuesta incluye X-Request-Id', function () {",
+          "    pm.expect(pm.response.headers.has('X-Request-Id')).to.be.true;",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "loginEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "loginPassword",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "page",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "size",
+      "value": "10",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "newUserEmail",
+      "value": "nuevo.usuario@example.com",
+      "type": "string"
+    },
+    {
+      "key": "newUserPassword",
+      "value": "ChangeMe123!",
+      "type": "string"
+    },
+    {
+      "key": "potentialVoterId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "potentialVoterIdentification",
+      "value": "1090123456",
+      "type": "string"
+    },
+    {
+      "key": "votingZoneId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "pollingPlaceId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "votingTableId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "assignedLeaderId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "xlsxFilePath",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Iniciar sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login exitoso', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.token) {",
+                  "        pm.collectionVariables.set('token', body.token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{loginEmail}}\",\n  \"password\": \"{{loginPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Endpoint público. Límite predeterminado: 5 solicitudes por minuto e IP. Al responder correctamente guarda el JWT en la variable token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "description": "Requiere los permisos GET_USER, CREATE_USER, EDIT_USER o CHANGE_USER_STATUS según la operación.",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user?page={{page}}&size={{size}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}",
+                  "description": "Página basada en cero."
+                },
+                {
+                  "key": "size",
+                  "value": "{{size}}",
+                  "description": "Tamaño entre 1 y 100."
+                }
+              ]
+            },
+            "description": "Lista paginada de usuarios. Requiere GET_USER."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.id) {",
+                  "        pm.collectionVariables.set('userId', body.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nuevo\",\n  \"surname\": \"Usuario\",\n  \"email\": \"{{newUserEmail}}\",\n  \"password\": \"{{newUserPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user"
+              ]
+            },
+            "description": "Crea un usuario y guarda su id en userId. Requiere CREATE_USER."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Usuario\",\n  \"surname\": \"Actualizado\",\n  \"email\": \"{{newUserEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "{{userId}}"
+              ]
+            },
+            "description": "Actualiza nombre, apellido y email. Requiere EDIT_USER."
+          },
+          "response": []
+        },
+        {
+          "name": "Activar o desactivar usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/{{userId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "{{userId}}",
+                "status"
+              ]
+            },
+            "description": "El mismo endpoint permite activar con true o desactivar con false. Requiere CHANGE_USER_STATUS."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Posibles votantes",
+      "description": "Operaciones paginadas, creación, actualización e importación masiva de posibles votantes.",
+      "item": [
+        {
+          "name": "Listar posibles votantes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/potential-voter?page={{page}}&size={{size}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "potential-voter"
+              ],
+              "query": [
+                {
+                  "key": "identification",
+                  "value": "{{potentialVoterIdentification}}",
+                  "description": "Coincidencia parcial de la identificación.",
+                  "disabled": true
+                },
+                {
+                  "key": "pollingPlaceId",
+                  "value": "{{pollingPlaceId}}",
+                  "description": "UUID del lugar de votación.",
+                  "disabled": true
+                },
+                {
+                  "key": "votingZoneId",
+                  "value": "{{votingZoneId}}",
+                  "description": "UUID de la zona o comuna.",
+                  "disabled": true
+                },
+                {
+                  "key": "assignedLeaderId",
+                  "value": "{{assignedLeaderId}}",
+                  "description": "UUID del líder asignado.",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "{{page}}",
+                  "description": "Página basada en cero."
+                },
+                {
+                  "key": "size",
+                  "value": "{{size}}",
+                  "description": "Tamaño entre 1 y 100."
+                }
+              ]
+            },
+            "description": "Lista paginada. Los cuatro filtros están deshabilitados inicialmente y pueden habilitarse individualmente o combinarse. Requiere GET_POTENTIAL_VOTER."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear posible votante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.id) {",
+                  "        pm.collectionVariables.set('potentialVoterId', body.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identification\": \"{{potentialVoterIdentification}}\",\n  \"firstName\": \"Ana\",\n  \"lastName\": \"Pérez\",\n  \"votingTableId\": \"{{votingTableId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/potential-voter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "potential-voter"
+              ]
+            },
+            "description": "El líder se obtiene del userId contenido en el JWT, no del body. Guarda el id creado en potentialVoterId. Requiere CREATE_POTENTIAL_VOTER."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar posible votante",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Ana María\",\n  \"lastName\": \"Pérez\",\n  \"votingTableId\": \"{{votingTableId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/potential-voter/{{potentialVoterId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "potential-voter",
+                "{{potentialVoterId}}"
+              ]
+            },
+            "description": "Actualiza nombre, apellido y mesa; conserva identificación y líder. Requiere EDIT_POTENTIAL_VOTER."
+          },
+          "response": []
+        },
+        {
+          "name": "Importar posibles votantes desde XLSX",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "description": "Archivo .xlsx. Si Postman no resuelve xlsxFilePath, selecciónelo manualmente en este campo.",
+                  "type": "file",
+                  "src": "{{xlsxFilePath}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/potential-voter/import",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "potential-voter",
+                "import"
+              ]
+            },
+            "description": "Importación multipart con campo file. El líder se obtiene del JWT. Límite predeterminado: 2 solicitudes por minuto y usuario. Requiere CREATE_POTENTIAL_VOTER."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Zonas y lugares de votación",
+      "description": "Consultas de zonas, lugares y mesas. Requieren GET_POTENTIAL_VOTER.",
+      "item": [
+        {
+          "name": "Listar zonas de votación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    if (Array.isArray(body) && body.length > 0 && body[0].id) {",
+                  "        pm.collectionVariables.set('votingZoneId', body[0].id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/voting-zones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "voting-zones"
+              ]
+            },
+            "description": "Lista las zonas y guarda automáticamente el primer id en votingZoneId."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar zona con lugares y mesas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    const places = Array.isArray(body.pollingPlaces) ? body.pollingPlaces : [];",
+                  "    if (places.length > 0) {",
+                  "        pm.collectionVariables.set('pollingPlaceId', places[0].id);",
+                  "        const tables = Array.isArray(places[0].votingTables) ? places[0].votingTables : [];",
+                  "        if (tables.length > 0) {",
+                  "            pm.collectionVariables.set('votingTableId', tables[0].id);",
+                  "        }",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/voting-zones/{{votingZoneId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "voting-zones",
+                "{{votingZoneId}}"
+              ]
+            },
+            "description": "Obtiene una zona con sus lugares y mesas. Guarda el primer pollingPlaceId y votingTableId disponibles."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Endpoint público de estado de la aplicación."
+          },
+          "response": []
+        },
+        {
+          "name": "Métricas Prometheus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/prometheus",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "prometheus"
+              ]
+            },
+            "description": "Métricas en formato Prometheus. Requiere un JWT autenticado."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
