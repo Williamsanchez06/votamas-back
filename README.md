@@ -74,8 +74,7 @@ La exportación de posibles votantes se limita con `EXPORT_MAX_ROWS` (10.000 por
 ## Endpoints de sesión, actividad y exportación
 
 - `GET /api/v1/auth/me`: consulta el usuario autenticado, roles, módulos y permisos vigentes a partir del `userId`
-  verificado del JWT. Un `LIDER` recibe únicamente Inicio y Posibles votantes; un `ADMINISTRADOR` recibe todos los
-  módulos.
+  verificado del JWT. Un `LIDER` recibe únicamente Posibles votantes; un `ADMINISTRADOR` recibe todos los módulos.
 - `GET /api/v1/activity/recent?limit=10`: devuelve entre 1 y 50 movimientos recientes de usuarios y posibles
   votantes. El evento se deriva de sus fechas de creación y actualización; no reemplaza un historial de auditoría
   inmutable.
