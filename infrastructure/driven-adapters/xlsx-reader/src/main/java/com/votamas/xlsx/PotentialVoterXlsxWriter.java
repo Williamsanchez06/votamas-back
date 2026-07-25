@@ -5,6 +5,8 @@ import com.votamas.model.potentialvoter.gateways.PotentialVoterSpreadsheetWriter
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -21,6 +23,9 @@ public class PotentialVoterXlsxWriter implements PotentialVoterSpreadsheetWriter
             "Mesa", "Fecha de registro", "Líder asignado"
     };
     private static final int MAX_COLUMN_WIDTH = 50 * 256;
+    private static final byte HEADER_RED = (byte) 0xBD;
+    private static final byte HEADER_GREEN = (byte) 0x16;
+    private static final byte HEADER_BLUE = (byte) 0x22;
 
     @Override
     public Mono<byte[]> write(List<PotentialVoterExportRow> rows) {
@@ -38,7 +43,10 @@ public class PotentialVoterXlsxWriter implements PotentialVoterSpreadsheetWriter
             headerFont.setColor(IndexedColors.WHITE.getIndex());
             var headerStyle = workbook.createCellStyle();
             headerStyle.setFont(headerFont);
-            headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+            headerStyle.setFillForegroundColor(
+                    new XSSFColor(
+                            new byte[]{HEADER_RED, HEADER_GREEN, HEADER_BLUE},
+                            new DefaultIndexedColorMap()));
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
             var dateStyle = workbook.createCellStyle();

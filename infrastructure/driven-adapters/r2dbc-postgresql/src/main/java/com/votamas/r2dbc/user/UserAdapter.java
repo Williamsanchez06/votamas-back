@@ -11,9 +11,6 @@ import com.votamas.r2dbc.user.mapper.UserRepositoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.relational.core.query.Query;
 import org.springframework.r2dbc.core.DatabaseClient;
 import reactor.core.publisher.Mono;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -24,6 +21,7 @@ import java.util.UUID;
 public class UserAdapter implements UserRepository {
 
     private static final String LEADER_ROLE = "LIDER";
+    private static final String ADMIN_ROLE = "ADMINISTRADOR";
     private static final String ASSIGN_ROLE = """
             INSERT INTO user_role (user_id, role_id)
             SELECT :userId, role_id
@@ -35,7 +33,6 @@ public class UserAdapter implements UserRepository {
 
     private final UserReactiveRepository repository;
     private final UserRepositoryMapper mapper;
-    private final R2dbcEntityTemplate template;
     private final DatabaseClient databaseClient;
     private final TransactionalOperator transactionalOperator;
 
@@ -64,14 +61,12 @@ public class UserAdapter implements UserRepository {
 
     @Override
     public Mono<PageResult<User>> findAll(PageQuery pagination) {
-        Query pageQuery = Query.empty()
-                .sort(Sort.by(Sort.Direction.ASC, "name", "surname", "id"))
-                .limit(pagination.size())
-                .offset(pagination.offset());
-
         return Mono.zip(
-                template.select(pageQuery, UserData.class).map(mapper::toUser).collectList(),
-                template.count(Query.empty(), UserData.class),
+                repository.findAllExcludingRole(
+                                ADMIN_ROLE, pagination.size(), pagination.offset())
+                        .map(mapper::toUser)
+                        .collectList(),
+                repository.countExcludingRole(ADMIN_ROLE),
                 (users, total) -> PageResult.of(users, pagination, total)
         );
     }
