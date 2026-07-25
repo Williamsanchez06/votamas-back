@@ -11,55 +11,55 @@ INSERT INTO vota_mas.module (
     secondary_icon,
     tertiary_icon
 ) VALUES
-(
-    1,
-    now(),
-    now(),
-    '43eedff1-7cc0-4614-a4b2-dc0443d20c64',
-    null,
-    'Inicio',
-    'home',
-    'Visualiza un resumen general con métricas clave para toma de decisiones',
-    'icon-dashboard',
-    'icon-bar-chart',
-    'icon-pie-chart'
-),
-(
-    3,
-    now(),
-    now(),
-    'f58bbc71-0082-414e-ba52-666427bce16e',
-    null,
-    'Roles',
-    'roles',
-    'Gestión de roles del sistema',
-    'icon-users',
-    'icon-lock',
-    'icon-key'
-),
-(
-    4,
-    now(),
-    now(),
-    'b71340e8-b44b-477f-8475-af42c580668b',
-    null,
-    'Líderes',
-    'users',
-    'Gestión de líderes responsables del registro de posibles votantes',
-    'icon-user',
-    'icon-bar-chart',
-    'icon-pie-chart'
-),
-(
-    5,
-    now(),
-    now(),
-    '7f87f369-b46f-4e45-9380-51152c2d352d',
-    null,
-    'Posibles votantes',
-    'potential-voters',
-    'Gestión de posibles votantes',
-    'icon-user-check',
-    'icon-users',
-    'icon-list'
-);
+      (
+          1,
+          NOW(),
+          NOW(),
+          '43eedff1-7cc0-4614-a4b2-dc0443d20c64',
+          NULL,
+          'Inicio',
+          'home',
+          'Visualiza un resumen general con métricas clave para la toma de decisiones',
+          'fa-house',
+          NULL,
+          NULL
+      ),
+-- (
+--     4,
+--     NOW(),
+--     NOW(),
+--     'f58bbc71-0082-414e-ba52-666427bce16e',
+--     NULL,
+--     'Roles',
+--     'roles',
+--     'Gestión de roles y permisos del sistema',
+--     'fa-shield-halved',
+--     NULL,
+--     NULL
+-- ),
+      (
+          2,
+          NOW(),
+          NOW(),
+          '7f87f369-b46f-4e45-9380-51152c2d352d',
+          NULL,
+          'Posibles votantes',
+          'potential-voters',
+          'Gestión de posibles votantes',
+          'fa-users',
+          NULL,
+          NULL
+      ),
+      (
+          3,
+          NOW(),
+          NOW(),
+          'b71340e8-b44b-477f-8475-af42c580668b',
+          NULL,
+          'Líderes',
+          'leaders',
+          'Gestión de líderes responsables del registro de posibles votantes',
+          'fa-user-tie',
+          NULL,
+          NULL
+      );
