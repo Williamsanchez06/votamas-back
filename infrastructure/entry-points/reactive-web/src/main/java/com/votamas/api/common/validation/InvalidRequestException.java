@@ -10,6 +10,10 @@ public class InvalidRequestException extends RuntimeException {
         this.errors = List.copyOf(errors);
     }
 
+    public static InvalidRequestException forField(String field, String message) {
+        return new InvalidRequestException(List.of(new FieldValidationError(field, message)));
+    }
+
     public List<FieldValidationError> errors() {
         return errors;
     }

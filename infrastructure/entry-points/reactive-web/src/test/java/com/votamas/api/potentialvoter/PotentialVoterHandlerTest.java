@@ -4,9 +4,11 @@ import com.votamas.api.common.validation.RequestValidator;
 import com.votamas.api.common.web.AuthenticatedUserIdResolver;
 import com.votamas.api.common.web.PotentialVoterImportRequestExtractor;
 import com.votamas.api.potentialvoter.dtos.PotentialVoterCreateRequestDTO;
+import com.votamas.api.potentialvoter.config.PotentialVoterExportProperties;
 import com.votamas.api.potentialvoter.handlers.PotentialVoterHandler;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
 import com.votamas.model.potentialvoter.PotentialVoter;
+import com.votamas.usecase.potentialvoter.ExportPotentialVotersUseCase;
 import com.votamas.usecase.potentialvoter.ImportPotentialVotersUseCase;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,10 @@ class PotentialVoterHandlerTest {
                 .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
         var handler = new PotentialVoterHandler(voterUseCase, validator,
                 mock(PotentialVoterImportRequestExtractor.class),
-                mock(ImportPotentialVotersUseCase.class), userIdResolver,
+                mock(ImportPotentialVotersUseCase.class),
+                mock(ExportPotentialVotersUseCase.class),
+                new PotentialVoterExportProperties(10_000),
+                userIdResolver,
                 Mappers.getMapper(PotentialVoterMapper.class));
 
         StepVerifier.create(handler.createPotentialVoter(request))

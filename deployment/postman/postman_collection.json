@@ -108,6 +108,11 @@
       "key": "xlsxFilePath",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "activityLimit",
+      "value": "10",
+      "type": "string"
     }
   ],
   "item": [
@@ -174,15 +179,41 @@
             "description": "Endpoint público. Límite predeterminado: 5 solicitudes por minuto e IP. Al responder correctamente guarda el JWT en la variable token."
           },
           "response": []
+        },
+        {
+          "name": "Consultar usuario autenticado y módulos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Obtiene desde la base de datos el usuario identificado por el JWT, sus roles, módulos y permisos vigentes. LIDER recibe Inicio y Posibles votantes; ADMINISTRADOR recibe todos los módulos."
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Usuarios",
-      "description": "Requiere los permisos GET_USER, CREATE_USER, EDIT_USER o CHANGE_USER_STATUS según la operación.",
+      "name": "Líderes",
+      "description": "Administración de líderes. Requiere GET_USER, CREATE_USER, EDIT_USER o CHANGE_USER_STATUS según la operación.",
       "item": [
         {
-          "name": "Listar usuarios",
+          "name": "Listar líderes",
           "request": {
             "method": "GET",
             "header": [
@@ -214,12 +245,12 @@
                 }
               ]
             },
-            "description": "Lista paginada de usuarios. Requiere GET_USER."
+            "description": "Lista paginada de líderes. Requiere GET_USER."
           },
           "response": []
         },
         {
-          "name": "Crear usuario",
+          "name": "Crear líder",
           "event": [
             {
               "listen": "test",
@@ -268,12 +299,12 @@
                 "user"
               ]
             },
-            "description": "Crea un usuario y guarda su id en userId. Requiere CREATE_USER."
+            "description": "Crea un usuario, le asigna automáticamente el rol LIDER y guarda su id en userId. Requiere CREATE_USER."
           },
           "response": []
         },
         {
-          "name": "Actualizar usuario",
+          "name": "Actualizar líder",
           "request": {
             "method": "PUT",
             "header": [
@@ -312,7 +343,7 @@
           "response": []
         },
         {
-          "name": "Activar o desactivar usuario",
+          "name": "Activar o desactivar líder",
           "request": {
             "method": "PATCH",
             "header": [
@@ -399,7 +430,7 @@
                 {
                   "key": "assignedLeaderId",
                   "value": "{{assignedLeaderId}}",
-                  "description": "UUID del líder asignado.",
+                  "description": "UUID del líder asignado. ADMINISTRADOR puede aplicarlo; para LIDER se reemplaza siempre por el userId del JWT.",
                   "disabled": true
                 },
                 {
@@ -414,7 +445,7 @@
                 }
               ]
             },
-            "description": "Lista paginada. Los cuatro filtros están deshabilitados inicialmente y pueden habilitarse individualmente o combinarse. Requiere GET_POTENTIAL_VOTER."
+            "description": "Lista paginada. ADMINISTRADOR puede consultar todo y combinar filtros; LIDER solo recibe registros asignados a su userId del JWT. Requiere GET_POTENTIAL_VOTER."
           },
           "response": []
         },
@@ -508,6 +539,54 @@
               ]
             },
             "description": "Actualiza nombre, apellido y mesa; conserva identificación y líder. Requiere EDIT_POTENTIAL_VOTER."
+          },
+          "response": []
+        },
+        {
+          "name": "Descargar posibles votantes en Excel",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/potential-voter/export",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "potential-voter",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "identification",
+                  "value": "{{potentialVoterIdentification}}",
+                  "disabled": true
+                },
+                {
+                  "key": "pollingPlaceId",
+                  "value": "{{pollingPlaceId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "votingZoneId",
+                  "value": "{{votingZoneId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "assignedLeaderId",
+                  "value": "{{assignedLeaderId}}",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Descarga un archivo XLSX con los mismos filtros opcionales del listado. ADMINISTRADOR puede exportar todo; LIDER solo exporta sus registros. Requiere GET_POTENTIAL_VOTER."
           },
           "response": []
         },
@@ -639,6 +718,45 @@
               ]
             },
             "description": "Obtiene una zona con sus lugares y mesas. Guarda el primer pollingPlaceId y votingTableId disponibles."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Actividad",
+      "description": "Consulta resumida de los movimientos más recientes registrados en usuarios y posibles votantes.",
+      "item": [
+        {
+          "name": "Listar últimos movimientos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/activity/recent?limit={{activityLimit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "activity",
+                "recent"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "{{activityLimit}}",
+                  "description": "Cantidad entre 1 y 50."
+                }
+              ]
+            },
+            "description": "Devuelve movimientos derivados de las fechas de creación y actualización. Requiere GET_USER."
           },
           "response": []
         }

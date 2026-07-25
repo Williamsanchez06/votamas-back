@@ -1,5 +1,6 @@
 package com.votamas.api.user.dtos;
 
+import com.votamas.api.common.validation.RequestFieldNormalizer;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,16 +21,8 @@ public record UserCreateRequestDTO(
         String password
 ) {
     public UserCreateRequestDTO {
-        name = normalizeText(name);
-        surname = normalizeText(surname);
-        email = normalizeEmail(email);
-    }
-
-    private static String normalizeText(String value) {
-        return value == null ? null : value.trim().replaceAll("\\s+", " ");
-    }
-
-    private static String normalizeEmail(String value) {
-        return value == null ? null : value.trim().toLowerCase(java.util.Locale.ROOT);
+        name = RequestFieldNormalizer.normalizeText(name);
+        surname = RequestFieldNormalizer.normalizeText(surname);
+        email = RequestFieldNormalizer.normalizeEmail(email);
     }
 }

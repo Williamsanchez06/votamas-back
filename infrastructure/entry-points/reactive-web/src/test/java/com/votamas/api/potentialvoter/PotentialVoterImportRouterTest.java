@@ -9,8 +9,10 @@ import com.votamas.api.exceptions.GlobalExceptionHandler;
 import com.votamas.api.potentialvoter.handlers.PotentialVoterHandler;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapperImpl;
 import com.votamas.api.potentialvoter.routers.PotentialVoterRouterRest;
+import com.votamas.api.potentialvoter.config.PotentialVoterExportProperties;
 import com.votamas.model.potentialvoter.PotentialVoterImportResult;
 import com.votamas.usecase.potentialvoter.ImportPotentialVotersUseCase;
+import com.votamas.usecase.potentialvoter.ExportPotentialVotersUseCase;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,12 @@ class PotentialVoterImportRouterTest {
 
     @MockitoBean
     private ImportPotentialVotersUseCase importUseCase;
+
+    @MockitoBean
+    private ExportPotentialVotersUseCase exportUseCase;
+
+    @MockitoBean
+    private PotentialVoterExportProperties exportProperties;
 
     @MockitoBean
     private AuthenticatedUserIdResolver authenticatedUserIdResolver;

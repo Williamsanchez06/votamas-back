@@ -16,8 +16,6 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface LoginMapper {
 
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "password", target = "password")
     Login toLogin(LoginRequest loginRequest);
 
     @Mapping(source = "accessToken", target = "token")

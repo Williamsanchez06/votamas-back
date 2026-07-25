@@ -19,6 +19,7 @@ public class AuthRouterRest {
     public RouterFunction<ServerResponse> authRouterFunction(AuthHandler handler) {
         return route()
                 .POST(apiProperties.baseApiPath.concat("/auth/login"), handler::login)
+                .GET(apiProperties.baseApiPath.concat("/auth/me"), handler::getCurrentUser)
                 .build();
     }
 }

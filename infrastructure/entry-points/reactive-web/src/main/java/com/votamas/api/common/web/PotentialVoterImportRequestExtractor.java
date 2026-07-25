@@ -53,16 +53,16 @@ public class PotentialVoterImportRequestExtractor {
                             DataBufferUtils.release(buffer);
                         }
                         if (content.length == 0) {
-                            throw new InvalidRequestException(List.of(
-                                    new FieldValidationError("file", "El archivo no puede estar vacío")));
+                            throw InvalidRequestException.forField(
+                                    "file", "El archivo no puede estar vacío");
                         }
                         return new PotentialVoterImportRequest(content);
                     })
                     .onErrorMap(DataBufferLimitException.class, exception ->
-                            new InvalidRequestException(List.of(new FieldValidationError(
-                                    "file", "El archivo supera el tamaño máximo permitido"))))
-                    .switchIfEmpty(Mono.error(new InvalidRequestException(List.of(
-                            new FieldValidationError("file", "El archivo no puede estar vacío")))));
+                            InvalidRequestException.forField(
+                                    "file", "El archivo supera el tamaño máximo permitido"))
+                    .switchIfEmpty(Mono.error(InvalidRequestException.forField(
+                            "file", "El archivo no puede estar vacío")));
         });
     }
 

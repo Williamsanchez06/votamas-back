@@ -43,6 +43,9 @@ imports:
   potential-voters:
     max-file-size-bytes: ${IMPORT_MAX_FILE_SIZE_BYTES:10485760}
     max-rows: ${IMPORT_MAX_ROWS:5000}
+exports:
+  potential-voters:
+    max-rows: ${EXPORT_MAX_ROWS:10000}
 rate-limit:
   enabled: ${RATE_LIMIT_ENABLED:true}
   max-buckets: ${RATE_LIMIT_MAX_BUCKETS:10000}

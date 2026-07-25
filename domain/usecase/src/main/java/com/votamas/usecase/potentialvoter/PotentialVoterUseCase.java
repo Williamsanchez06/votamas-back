@@ -1,6 +1,5 @@
 package com.votamas.usecase.potentialvoter;
 
-import com.votamas.model.common.pagination.PageQuery;
 import com.votamas.model.common.pagination.PageResult;
 import com.votamas.model.exception.ConflictException;
 import com.votamas.model.exception.MessageError;
@@ -24,6 +23,7 @@ public class PotentialVoterUseCase {
     private final PotentialVoterQueryRepository potentialVoterQueryRepository;
     private final VotingLocationRepository votingLocationRepository;
     private final UserRepository userRepository;
+    private final PotentialVoterAccessUseCase potentialVoterAccessUseCase;
 
     public Mono<PotentialVoter> savePotentialVoter(PotentialVoter potentialVoter) {
         return Mono.zip(
@@ -44,18 +44,19 @@ public class PotentialVoterUseCase {
                 });
     }
 
-    public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(PageQuery pageQuery) {
-        return getAllPotentialVoters(PotentialVoterSearchCriteria.withoutFilters(pageQuery));
+    public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(
+            PotentialVoterSearchCriteria criteria, UUID authenticatedUserId) {
+        return potentialVoterAccessUseCase.scope(criteria, authenticatedUserId)
+                .flatMap(potentialVoterQueryRepository::findAllWithVotingLocation);
     }
 
-    public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(PotentialVoterSearchCriteria criteria) {
-        return potentialVoterQueryRepository.findAllWithVotingLocation(criteria);
-    }
-
-    public Mono<PotentialVoter> updatePotentialVoter(UUID id, PotentialVoter potentialVoter) {
+    public Mono<PotentialVoter> updatePotentialVoter(
+            UUID id, PotentialVoter potentialVoter, UUID authenticatedUserId) {
         return potentialVoterRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException(MessageError.NO_POTENTIAL_VOTER_FOUND)))
-                .flatMap(existing -> votingLocationRepository
+                .flatMap(existing -> potentialVoterAccessUseCase
+                        .verifyOwnership(authenticatedUserId, existing.assignedLeaderId())
+                        .then(votingLocationRepository
                         .existsVotingTableById(potentialVoter.votingTableId())
                         .filter(Boolean.TRUE::equals)
                         .switchIfEmpty(Mono.error(new NotFoundException(MessageError.NO_VOTING_TABLE_FOUND)))
@@ -67,6 +68,6 @@ public class PotentialVoterUseCase {
                             .assignedLeaderId(existing.assignedLeaderId())
                             .build();
                     return potentialVoterRepository.save(updated);
-                        })));
+                        }))));
     }
 }

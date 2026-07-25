@@ -1,11 +1,14 @@
 package com.votamas.api.config;
 
 import com.votamas.api.auth.handlers.AuthHandler;
+import com.votamas.api.auth.mappers.CurrentUserMapper;
 import com.votamas.api.auth.mappers.LoginMapperImpl;
 import com.votamas.api.auth.routers.AuthRouterRest;
 import com.votamas.api.config.ApiProperties;
 import com.votamas.api.common.validation.RequestValidator;
-import com.votamas.usecase.login.LoginUseCase;
+import com.votamas.api.common.web.AuthenticatedUserIdResolver;
+import com.votamas.usecase.auth.CurrentUserUseCase;
+import com.votamas.usecase.auth.LoginUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
@@ -29,6 +32,15 @@ class ConfigTest {
 
     @MockitoBean
     private LoginUseCase loginUseCase;
+
+    @MockitoBean
+    private CurrentUserUseCase currentUserUseCase;
+
+    @MockitoBean
+    private AuthenticatedUserIdResolver authenticatedUserIdResolver;
+
+    @MockitoBean
+    private CurrentUserMapper currentUserMapper;
 
     @Test
     void corsConfigurationShouldAllowOrigins() {

@@ -14,16 +14,30 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Query;
+import org.springframework.r2dbc.core.DatabaseClient;
 import reactor.core.publisher.Mono;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
 public class UserAdapter implements UserRepository {
 
+    private static final String LEADER_ROLE = "LIDER";
+    private static final String ASSIGN_ROLE = """
+            INSERT INTO user_role (user_id, role_id)
+            SELECT :userId, role_id
+              FROM role
+             WHERE name = :roleName
+               AND is_active = TRUE
+            ON CONFLICT DO NOTHING
+            """;
+
     private final UserReactiveRepository repository;
     private final UserRepositoryMapper mapper;
     private final R2dbcEntityTemplate template;
+    private final DatabaseClient databaseClient;
+    private final TransactionalOperator transactionalOperator;
 
     @Override
     public Mono<User> save(User user) {
@@ -78,6 +92,24 @@ public class UserAdapter implements UserRepository {
                     return repository.save(updated);
                 })
                 .map(mapper::toUser);
+    }
+
+    @Override
+    public Mono<User> saveAsLeader(User user) {
+        return repository.save(mapper.toUserData(user))
+                .flatMap(saved -> databaseClient.sql(ASSIGN_ROLE)
+                        .bind("userId", saved.id())
+                        .bind("roleName", LEADER_ROLE)
+                        .fetch()
+                        .rowsUpdated()
+                        .filter(rows -> rows > 0)
+                        .switchIfEmpty(Mono.error(new IllegalStateException(
+                                "El rol LIDER no está configurado o se encuentra inactivo")))
+                        .thenReturn(saved))
+                .map(mapper::toUser)
+                .onErrorMap(DuplicateKeyException.class,
+                        error -> new ConflictException(MessageError.EMAIL_ALREADY_REGISTERED))
+                .as(transactionalOperator::transactional);
     }
 
 }

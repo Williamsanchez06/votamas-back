@@ -18,6 +18,8 @@ public interface UserRepository {
 
     Mono<User> save(User user);
 
+    Mono<User> saveAsLeader(User user);
+
     Mono<PageResult<User>> findAll(PageQuery pageQuery);
 
     Mono<User> updateStatus(UUID id, boolean active);

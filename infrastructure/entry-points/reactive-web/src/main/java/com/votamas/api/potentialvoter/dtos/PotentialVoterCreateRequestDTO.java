@@ -1,5 +1,6 @@
 package com.votamas.api.potentialvoter.dtos;
 
+import com.votamas.api.common.validation.RequestFieldNormalizer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,12 +21,8 @@ public record PotentialVoterCreateRequestDTO(
         UUID votingTableId
 ) {
     public PotentialVoterCreateRequestDTO {
-        identification = normalize(identification);
-        firstName = normalize(firstName);
-        lastName = normalize(lastName);
-    }
-
-    private static String normalize(String value) {
-        return value == null ? null : value.trim().replaceAll("\\s+", " ");
+        identification = RequestFieldNormalizer.normalizeText(identification);
+        firstName = RequestFieldNormalizer.normalizeText(firstName);
+        lastName = RequestFieldNormalizer.normalizeText(lastName);
     }
 }

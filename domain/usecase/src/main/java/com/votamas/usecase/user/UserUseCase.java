@@ -31,7 +31,7 @@ public class UserUseCase {
                                     .password(hashedPassword)
                                     .active(true)
                                     .build())
-                            .flatMap(userRepository::save);
+                            .flatMap(userRepository::saveAsLeader);
                 });
     }
 

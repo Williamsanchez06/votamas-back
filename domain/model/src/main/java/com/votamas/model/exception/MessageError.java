@@ -17,6 +17,8 @@ public enum MessageError {
     INVALID_SPREADSHEET(Constants.ERROR_400, "El archivo XLSX no es válido"),
     MISSING_SPREADSHEET_HEADERS(Constants.ERROR_400, "El archivo no contiene todos los encabezados obligatorios"),
     SPREADSHEET_ROW_LIMIT_EXCEEDED(Constants.ERROR_400, "El archivo supera la cantidad máxima de filas permitida"),
+    SPREADSHEET_EXPORT_LIMIT_EXCEEDED(Constants.ERROR_400,
+            "La consulta supera la cantidad máxima de filas permitida para exportar"),
     EMAIL_ALREADY_REGISTERED(Constants.ERROR_409, "El email ya está registrado"),
     ID_ALREADY_REGISTERED(Constants.ERROR_409, "La identificación ya esta registrada");
 

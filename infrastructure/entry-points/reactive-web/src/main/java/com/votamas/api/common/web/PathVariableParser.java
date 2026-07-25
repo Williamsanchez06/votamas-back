@@ -1,11 +1,9 @@
 package com.votamas.api.common.web;
 
-import com.votamas.api.common.validation.FieldValidationError;
 import com.votamas.api.common.validation.InvalidRequestException;
 import lombok.experimental.UtilityClass;
 
 import java.util.UUID;
-import java.util.List;
 
 @UtilityClass
 public class PathVariableParser {
@@ -13,8 +11,8 @@ public class PathVariableParser {
         try {
             return UUID.fromString(value);
         } catch (IllegalArgumentException exception) {
-            throw new InvalidRequestException(List.of(
-                    new FieldValidationError(field, "El identificador no tiene un formato UUID válido")));
+            throw InvalidRequestException.forField(
+                    field, "El identificador no tiene un formato UUID válido");
         }
     }
 }

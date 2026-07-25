@@ -1,5 +1,6 @@
 package com.votamas.api.auth.dtos;
 
+import com.votamas.api.common.validation.RequestFieldNormalizer;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,6 @@ public record LoginRequest(
         String password
 ) {
     public LoginRequest {
-        email = email == null ? null : email.trim().toLowerCase(java.util.Locale.ROOT);
+        email = RequestFieldNormalizer.normalizeEmail(email);
     }
 }

@@ -3,6 +3,7 @@ package com.votamas.r2dbc.potentialvoter;
 import com.votamas.model.common.pagination.PageQuery;
 import com.votamas.model.common.pagination.PageResult;
 import com.votamas.model.potentialvoter.PotentialVoterDetails;
+import com.votamas.model.potentialvoter.PotentialVoterExportRow;
 import com.votamas.model.potentialvoter.PotentialVoterSearchCriteria;
 import com.votamas.model.potentialvoter.gateways.PotentialVoterQueryRepository;
 import com.votamas.r2dbc.potentialvoter.mapper.PotentialVoterDetailsMapper;
@@ -10,6 +11,7 @@ import com.votamas.r2dbc.potentialvoter.projections.PotentialVoterDetailsProject
 import lombok.RequiredArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -40,6 +42,17 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
             SELECT COUNT(*) AS total_elements
             """;
 
+    private static final String EXPORT_COLUMNS = """
+            SELECT pv.identification,
+                   pv.first_name,
+                   pv.last_name,
+                   vz.name AS voting_zone_name,
+                   pp.name AS polling_place_name,
+                   vt.table_number,
+                   pv.registration_date,
+                   CONCAT(leader.name, ' ', leader.surname) AS assigned_leader_name
+            """;
+
     private static final String FROM_WITH_VOTING_LOCATION = """
               FROM potential_voters pv
               INNER JOIN voting_tables vt
@@ -53,6 +66,16 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
     private static final String PAGE_ORDER = """
              ORDER BY pv.potential_voter_id
              LIMIT :limit OFFSET :offset
+            """;
+
+    private static final String LEADER_JOIN = """
+              INNER JOIN users leader
+                      ON leader.user_id = pv.assigned_leader_id
+            """;
+
+    private static final String EXPORT_ORDER = """
+             ORDER BY pv.potential_voter_id
+             LIMIT :limit
             """;
 
     private static final String IDENTIFICATION_FILTER =
@@ -90,6 +113,17 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
 
         return Mono.zip(content, total,
                 (voters, totalElements) -> PageResult.of(voters, pagination, totalElements));
+    }
+
+    @Override
+    public Flux<PotentialVoterExportRow> findForExport(PotentialVoterSearchCriteria criteria, int limit) {
+        FilterQuery filter = buildFilterQuery(criteria);
+        return filter.bind(databaseClient.sql(
+                        EXPORT_COLUMNS + FROM_WITH_VOTING_LOCATION + LEADER_JOIN
+                                + filter.whereClause() + EXPORT_ORDER))
+                .bind("limit", limit)
+                .mapProperties(PotentialVoterExportRow.class)
+                .all();
     }
 
     private FilterQuery buildFilterQuery(PotentialVoterSearchCriteria criteria) {

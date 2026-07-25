@@ -69,6 +69,26 @@ la aplicación.
 
 Las variables opcionales de importación son `IMPORT_MAX_FILE_SIZE_BYTES` e `IMPORT_MAX_ROWS`. El archivo XLSX se
 procesa en memoria con límites explícitos, por lo que estos valores deben ajustarse a la memoria del runtime.
+La exportación de posibles votantes se limita con `EXPORT_MAX_ROWS` (10.000 por defecto).
+
+## Endpoints de sesión, actividad y exportación
+
+- `GET /api/v1/auth/me`: consulta el usuario autenticado, roles, módulos y permisos vigentes a partir del `userId`
+  verificado del JWT. Un `LIDER` recibe únicamente Inicio y Posibles votantes; un `ADMINISTRADOR` recibe todos los
+  módulos.
+- `GET /api/v1/activity/recent?limit=10`: devuelve entre 1 y 50 movimientos recientes de usuarios y posibles
+  votantes. El evento se deriva de sus fechas de creación y actualización; no reemplaza un historial de auditoría
+  inmutable.
+- `GET /api/v1/potential-voter/export`: descarga un XLSX y acepta los filtros opcionales `identification`,
+  `pollingPlaceId`, `votingZoneId` y `assignedLeaderId`.
+
+El listado y la exportación de posibles votantes se limitan automáticamente al usuario autenticado cuando no tiene
+el rol activo `ADMINISTRADOR`. El filtro `assignedLeaderId` enviado por un líder se reemplaza por el `userId` del JWT.
+La misma validación de propiedad se aplica al editar un posible votante.
+
+Al crear un líder mediante `POST /api/v1/user`, la aplicación asigna el rol activo `LIDER` dentro de la misma
+transacción. Para una base existente debe ejecutarse
+`deployment/migrations/20260725_configure_role_modules.sql`.
 
 ## Limitación de solicitudes
 
@@ -86,5 +106,3 @@ con la dirección remota de la conexión. No se confía en encabezados reenviado
 ## Base de datos
 
 `deployment/local_environment/create_BD.sql` recrea completamente la base y solo debe utilizarse en desarrollo local.
-Para una base existente se deben ejecutar, en orden, los scripts ubicados en `deployment/migrations` antes de desplegar
-la nueva versión de la aplicación.

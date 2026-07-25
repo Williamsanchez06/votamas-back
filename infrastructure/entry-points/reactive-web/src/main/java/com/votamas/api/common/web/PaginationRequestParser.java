@@ -1,12 +1,9 @@
 package com.votamas.api.common.web;
 
 import com.votamas.model.common.pagination.PageQuery;
-import com.votamas.api.common.validation.FieldValidationError;
 import com.votamas.api.common.validation.InvalidRequestException;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.reactive.function.server.ServerRequest;
-
-import java.util.List;
 
 @UtilityClass
 public class PaginationRequestParser {
@@ -36,6 +33,6 @@ public class PaginationRequestParser {
     }
 
     private InvalidRequestException invalid(String field, String message) {
-        return new InvalidRequestException(List.of(new FieldValidationError(field, message)));
+        return InvalidRequestException.forField(field, message);
     }
 }

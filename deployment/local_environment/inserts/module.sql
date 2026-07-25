@@ -25,19 +25,6 @@ INSERT INTO vota_mas.module (
     'icon-pie-chart'
 ),
 (
-    2,
-    now(),
-    now(),
-    'a5bc123b-d86f-4450-9e52-cb635af7c8a2',
-    null,
-    'Administración',
-    'administration',
-    'Módulo de administración del sistema',
-    'icon-settings',
-    'icon-tool',
-    'icon-shield'
-),
-(
     3,
     now(),
     now(),
@@ -56,9 +43,9 @@ INSERT INTO vota_mas.module (
     now(),
     'b71340e8-b44b-477f-8475-af42c580668b',
     null,
-    'Usuarios',
+    'Líderes',
     'users',
-    'Gestión de usuarios del sistema',
+    'Gestión de líderes responsables del registro de posibles votantes',
     'icon-user',
     'icon-bar-chart',
     'icon-pie-chart'

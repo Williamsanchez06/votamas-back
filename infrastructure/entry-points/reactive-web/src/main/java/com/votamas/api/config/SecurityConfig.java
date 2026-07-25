@@ -48,6 +48,7 @@ public class SecurityConfig {
         String userStatusPath = basePath.concat("/user/*/status");
         String potentialVoterPath = basePath.concat("/potential-voter/**");
         String votingZonePath = basePath.concat("/voting-zones/**");
+        String activityPath = basePath.concat("/activity/**");
 
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -63,7 +64,9 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers(basePath.concat("/auth/login"), "/actuator/health").permitAll()
+                        .pathMatchers(HttpMethod.GET, basePath.concat("/auth/me")).authenticated()
                         .pathMatchers("/actuator/prometheus").authenticated()
+                        .pathMatchers(HttpMethod.GET, activityPath).hasAuthority("GET_USER")
                         .pathMatchers(HttpMethod.GET, userPath).hasAuthority("GET_USER")
                         .pathMatchers(HttpMethod.POST, userPath).hasAuthority("CREATE_USER")
                         .pathMatchers(HttpMethod.PUT, userPath).hasAuthority("EDIT_USER")

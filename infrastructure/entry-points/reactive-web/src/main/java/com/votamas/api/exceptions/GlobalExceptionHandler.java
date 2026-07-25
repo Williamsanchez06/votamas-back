@@ -1,5 +1,6 @@
 package com.votamas.api.exceptions;
 
+import com.votamas.api.common.observability.LogMessageSanitizer;
 import com.votamas.api.common.observability.RequestTracing;
 import com.votamas.api.common.validation.InvalidRequestException;
 import com.votamas.model.exception.BusinessException;
@@ -67,7 +68,8 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         int status = HttpStatusExceptionMap.get(error.getMessageError().getCode());
         log.warn("event=CONTROLLED_ERROR requestId={} method={} path={} status={} code={} exception={} message={}",
                 requestId(request), request.method(), request.path(), status,
-                error.getMessageError().getCode(), error.getClass().getSimpleName(), safeMessage(error));
+                error.getMessageError().getCode(), error.getClass().getSimpleName(),
+                LogMessageSanitizer.sanitize(error.getMessage()));
         return buildResponse(error.getMessageError().getCode(), error.getMessageError().getMessage(), status, request);
     }
 
@@ -82,7 +84,7 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         Throwable rootCause = rootCause(error);
         log.error("event=UNEXPECTED_ERROR requestId={} method={} path={} exception={} rootCause={} rootMessage={}",
                 requestId(request), request.method(), request.path(), error.getClass().getName(),
-                rootCause.getClass().getName(), safeMessage(rootCause), error);
+                rootCause.getClass().getName(), LogMessageSanitizer.sanitize(rootCause.getMessage()), error);
         return buildResponse(ApiError.INTERNAL_ERROR.code(), ApiError.INTERNAL_ERROR.message(),
                 ApiError.INTERNAL_ERROR.status(), request);
     }
@@ -104,8 +106,4 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         return current;
     }
 
-    private String safeMessage(Throwable error) {
-        String message = error.getMessage();
-        return message == null ? "-" : message.replaceAll("[\\r\\n]", " ");
-    }
 }

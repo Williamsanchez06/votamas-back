@@ -1,6 +1,5 @@
 package com.votamas.api.potentialvoter.search;
 
-import com.votamas.api.common.validation.FieldValidationError;
 import com.votamas.api.common.validation.InvalidRequestException;
 import com.votamas.api.common.web.PaginationRequestParser;
 import com.votamas.api.common.web.PathVariableParser;
@@ -8,7 +7,6 @@ import com.votamas.model.potentialvoter.PotentialVoterSearchCriteria;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.List;
 import java.util.UUID;
 
 @UtilityClass
@@ -32,8 +30,8 @@ public class PotentialVoterSearchCriteriaParser {
                 .filter(value -> !value.isEmpty())
                 .orElse(null);
         if (identification != null && identification.length() > MAX_IDENTIFICATION_LENGTH) {
-            throw new InvalidRequestException(List.of(new FieldValidationError(
-                    "identification", "La identificación no puede superar 30 caracteres")));
+            throw InvalidRequestException.forField(
+                    "identification", "La identificación no puede superar 30 caracteres");
         }
         return identification;
     }

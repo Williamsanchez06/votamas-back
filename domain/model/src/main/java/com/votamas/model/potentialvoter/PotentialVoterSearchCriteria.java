@@ -19,4 +19,14 @@ public record PotentialVoterSearchCriteria(
     public static PotentialVoterSearchCriteria withoutFilters(PageQuery pagination) {
         return new PotentialVoterSearchCriteria(pagination, null, null, null, null);
     }
+
+    public PotentialVoterSearchCriteria assignedTo(UUID leaderId) {
+        return new PotentialVoterSearchCriteria(
+                pagination,
+                identification,
+                pollingPlaceId,
+                votingZoneId,
+                Objects.requireNonNull(leaderId, "El líder es obligatorio")
+        );
+    }
 }
