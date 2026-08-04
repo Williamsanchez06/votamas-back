@@ -48,4 +48,9 @@ public class PotentialVoterAdapter implements PotentialVoterRepository {
     public Mono<PotentialVoter> findById(UUID id) {
         return repository.findById(id).map(mapper::toPotentialVoter);
     }
+
+    @Override
+    public Mono<Void> deleteById(UUID id) {
+        return repository.deleteById(id);
+    }
 }

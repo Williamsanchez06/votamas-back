@@ -24,6 +24,7 @@ public class PotentialVoterRouterRest {
                 .POST(apiProperties.baseApiPath.concat("/potential-voter/import"), handler::importPotentialVoters)
                 .POST(apiProperties.baseApiPath.concat("/potential-voter"), handler::createPotentialVoter)
                 .PUT(apiProperties.baseApiPath.concat("/potential-voter/{id}"), handler::updatePotentialVoter)
+                .DELETE(apiProperties.baseApiPath.concat("/potential-voter/{id}"), handler::deletePotentialVoter)
                 .build();
     }
 }

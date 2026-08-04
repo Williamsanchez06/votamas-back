@@ -68,6 +68,13 @@ public class PotentialVoterHandler {
                 .flatMap(pv -> ServerResponse.ok().bodyValue(pv));
     }
 
+    public Mono<ServerResponse> deletePotentialVoter(ServerRequest request) {
+        UUID id = PathVariableParser.uuid(request.pathVariable("id"), "id");
+
+        return potentialVoterUseCase.deletePotentialVoter(id)
+                .then(ServerResponse.noContent().build());
+    }
+
     public Mono<ServerResponse> importPotentialVoters(ServerRequest request) {
         return importRequestExtractor.extract(request)
                 .zipWhen(ignored -> authenticatedUserIdResolver.resolve(request))

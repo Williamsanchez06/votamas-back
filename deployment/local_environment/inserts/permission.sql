@@ -11,5 +11,6 @@ VALUES
 ('721a25cb-c3f5-4e85-9389-f259c8d57cd1', now(), now(), 'GET_POTENTIAL_VOTER', 'Listar posibles votantes', '7f87f369-b46f-4e45-9380-51152c2d352d'),
 ('f39d68a9-a8e8-466e-a008-1d09d8078ef7', now(), now(), 'CREATE_POTENTIAL_VOTER', 'Crear posible votante', '7f87f369-b46f-4e45-9380-51152c2d352d'),
 ('0d7f8597-df66-42e1-b468-aaf38bb496ef', now(), now(), 'EDIT_POTENTIAL_VOTER', 'Editar posible votante', '7f87f369-b46f-4e45-9380-51152c2d352d'),
+('e50dfbcf-c58b-46a0-93ad-bdfd99ee0b6b', now(), now(), 'DELETE_POTENTIAL_VOTER', 'Eliminar posible votante', '7f87f369-b46f-4e45-9380-51152c2d352d'),
 ('265ecad3-00e7-4d16-b497-a456934c9f3f', now(), now(), 'CHANGE_USER_STATUS', 'Activar o desactivar líder', 'b71340e8-b44b-477f-8475-af42c580668b'),
 ('8ad1c15e-12d0-4d60-a6ce-1f6bdb683ec1', now(), now(), 'GET_HOME', 'Ver inicio', '43eedff1-7cc0-4614-a4b2-dc0443d20c64');

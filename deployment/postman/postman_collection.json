@@ -543,6 +543,36 @@
           "response": []
         },
         {
+          "name": "Eliminar posible votante",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/potential-voter/{{potentialVoterId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "potential-voter",
+                "{{potentialVoterId}}"
+              ]
+            },
+            "description": "Elimina el posible votante. Requiere DELETE_POTENTIAL_VOTER."
+          },
+          "response": []
+        },
+        {
           "name": "Descargar posibles votantes en Excel",
           "request": {
             "method": "GET",

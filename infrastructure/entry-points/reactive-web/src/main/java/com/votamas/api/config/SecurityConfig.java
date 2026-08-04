@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.GET, votingZonePath).hasAuthority("GET_POTENTIAL_VOTER")
                         .pathMatchers(HttpMethod.POST, potentialVoterPath).hasAuthority("CREATE_POTENTIAL_VOTER")
                         .pathMatchers(HttpMethod.PUT, potentialVoterPath).hasAuthority("EDIT_POTENTIAL_VOTER")
+                        .pathMatchers(HttpMethod.DELETE, potentialVoterPath).hasAuthority("DELETE_POTENTIAL_VOTER")
                         .anyExchange().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

@@ -73,6 +73,10 @@ public class PotentialVoterUseCase {
                 .flatMap(this::findDetails);
     }
 
+    public Mono<Void> deletePotentialVoter(UUID id) {
+       return potentialVoterRepository.deleteById(id);
+    }
+
     private Mono<PotentialVoterDetails> findDetails(PotentialVoter potentialVoter) {
         return potentialVoterQueryRepository.findByIdWithVotingLocation(potentialVoter.id())
                 .switchIfEmpty(Mono.error(

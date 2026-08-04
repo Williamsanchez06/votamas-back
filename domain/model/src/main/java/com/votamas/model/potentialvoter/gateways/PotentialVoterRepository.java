@@ -15,4 +15,6 @@ public interface PotentialVoterRepository {
     Flux<String> findExistingIdentifications(Set<String> identifications);
 
     Mono<PotentialVoter> findById(UUID id);
+
+    Mono<Void> deleteById(UUID id);
 }
