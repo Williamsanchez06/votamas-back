@@ -20,13 +20,13 @@ public class RecentActivityAdapter implements RecentActivityRepository {
               FROM (
                     SELECT u.user_id AS reference_id,
                            'USER' AS entity,
-                           CASE WHEN u.updated_at > u.created_at
+                           CASE WHEN u.updated_at IS NOT NULL
                                 THEN 'UPDATED' ELSE 'CREATED' END AS action,
-                           CASE WHEN u.updated_at > u.created_at
+                           CASE WHEN u.updated_at IS NOT NULL
                                 THEN CONCAT('Usuario ', u.name, ' ', u.surname, ' fue actualizado')
                                 ELSE CONCAT('Usuario ', u.name, ' ', u.surname, ' fue registrado')
                            END AS description,
-                           GREATEST(u.created_at, u.updated_at) AS occurred_at
+                           COALESCE(u.updated_at, u.created_at) AS occurred_at
                       FROM users u
 
                     UNION ALL

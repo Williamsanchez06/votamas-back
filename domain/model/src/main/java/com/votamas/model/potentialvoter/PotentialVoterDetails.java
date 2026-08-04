@@ -13,6 +13,6 @@ public record PotentialVoterDetails(
         String lastName,
         VotingTable votingTable,
         LocalDate registrationDate,
-        UUID assignedLeaderId
+        String assignedLeaderName
 ) {
 }

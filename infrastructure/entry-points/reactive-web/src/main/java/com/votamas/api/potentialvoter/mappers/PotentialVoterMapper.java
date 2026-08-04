@@ -35,9 +35,6 @@ public interface PotentialVoterMapper {
     @Mapping(target = "assignedLeaderId", ignore = true)
     PotentialVoter toPotentialVoter(PotentialVoterUpdateRequestDTO request);
 
-    @Mapping(target = "votingTable", source = "votingTableId")
-    PotentialVoterResponseDTO toResponse(PotentialVoter voter);
-
     PotentialVoterResponseDTO toResponse(PotentialVoterDetails voter);
 
     PotentialVoterImportResponseDTO toResponse(PotentialVoterImportResult result);
@@ -49,7 +46,4 @@ public interface PotentialVoterMapper {
 
     VotingZoneResponseDTO toResponse(VotingZone votingZone);
 
-    default VotingTableResponseDTO toVotingTableResponse(java.util.UUID id) {
-        return id == null ? null : new VotingTableResponseDTO(id, null, null);
-    }
 }

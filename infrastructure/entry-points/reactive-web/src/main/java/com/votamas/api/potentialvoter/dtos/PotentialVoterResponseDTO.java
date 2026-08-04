@@ -10,6 +10,6 @@ public record PotentialVoterResponseDTO(
         String lastName,
         VotingTableResponseDTO votingTable,
         LocalDate registrationDate,
-        UUID assignedLeaderId
+        String assignedLeaderName
 ) {
 }

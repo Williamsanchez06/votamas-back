@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
                    pv.first_name,
                    pv.last_name,
                    pv.registration_date,
-                   pv.assigned_leader_id,
+                   CONCAT_WS(' ', leader.name, leader.surname) AS assigned_leader_name,
                    vt.voting_table_id,
                    vt.table_number,
                    pp.polling_place_id,
@@ -97,7 +98,8 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
         PageQuery pagination = criteria.pagination();
 
         Mono<List<PotentialVoterDetails>> content = filter.bind(databaseClient.sql(
-                        SELECT_COLUMNS + FROM_WITH_VOTING_LOCATION + filter.whereClause() + PAGE_ORDER))
+                        SELECT_COLUMNS + FROM_WITH_VOTING_LOCATION + LEADER_JOIN
+                                + filter.whereClause() + PAGE_ORDER))
                 .bind("limit", pagination.size())
                 .bind("offset", pagination.offset())
                 .mapProperties(PotentialVoterDetailsProjection.class)
@@ -106,13 +108,23 @@ public class PotentialVoterQueryAdapter implements PotentialVoterQueryRepository
                 .collectList();
 
         Mono<Long> total = filter.bind(databaseClient.sql(
-                        COUNT + FROM_WITH_VOTING_LOCATION + filter.whereClause()))
+                        COUNT + FROM_WITH_VOTING_LOCATION + LEADER_JOIN + filter.whereClause()))
                 .map((row, metadata) -> row.get("total_elements", Long.class))
                 .one()
                 .defaultIfEmpty(0L);
 
         return Mono.zip(content, total,
                 (voters, totalElements) -> PageResult.of(voters, pagination, totalElements));
+    }
+
+    @Override
+    public Mono<PotentialVoterDetails> findByIdWithVotingLocation(UUID id) {
+        return databaseClient.sql(SELECT_COLUMNS + FROM_WITH_VOTING_LOCATION + LEADER_JOIN
+                        + " WHERE pv.potential_voter_id = :id")
+                .bind("id", id)
+                .mapProperties(PotentialVoterDetailsProjection.class)
+                .one()
+                .map(mapper::toDomain);
     }
 
     @Override

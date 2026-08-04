@@ -9,7 +9,7 @@ public record PotentialVoterDetailsProjection(
         String firstName,
         String lastName,
         LocalDate registrationDate,
-        UUID assignedLeaderId,
+        String assignedLeaderName,
         UUID votingTableId,
         Integer tableNumber,
         UUID pollingPlaceId,

@@ -30,6 +30,7 @@ class PotentialVoterDetailsMapperTest {
         assertEquals("Colegio Central", voter.votingTable().pollingPlace().name());
         assertEquals(zoneId, voter.votingTable().pollingPlace().votingZone().id());
         assertEquals("Zona 01", voter.votingTable().pollingPlace().votingZone().name());
+        assertEquals("Laura Gómez", voter.assignedLeaderName());
     }
 
     @Test
@@ -43,7 +44,7 @@ class PotentialVoterDetailsMapperTest {
     private PotentialVoterDetailsProjection projection(UUID tableId, UUID placeId, UUID zoneId) {
         return new PotentialVoterDetailsProjection(
                 UUID.randomUUID(), "123456", "Ana", "Pérez", LocalDate.of(2026, 7, 19),
-                UUID.randomUUID(), tableId, tableId == null ? null : 10, placeId,
+                "Laura Gómez", tableId, tableId == null ? null : 10, placeId,
                 placeId == null ? null : "Colegio Central", zoneId, zoneId == null ? null : "Zona 01"
         );
     }

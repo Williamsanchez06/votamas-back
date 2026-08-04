@@ -7,5 +7,5 @@ CREATE TABLE vota_mas.users
     password   VARCHAR(100) NOT NULL,
     active     BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP(6) NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP(6) NOT NULL DEFAULT now()
+    updated_at TIMESTAMP(6) NULL
 );

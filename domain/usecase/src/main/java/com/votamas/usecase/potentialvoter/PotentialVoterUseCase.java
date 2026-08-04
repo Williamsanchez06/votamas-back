@@ -25,7 +25,7 @@ public class PotentialVoterUseCase {
     private final UserRepository userRepository;
     private final PotentialVoterAccessUseCase potentialVoterAccessUseCase;
 
-    public Mono<PotentialVoter> savePotentialVoter(PotentialVoter potentialVoter) {
+    public Mono<PotentialVoterDetails> savePotentialVoter(PotentialVoter potentialVoter) {
         return Mono.zip(
                         potentialVoterRepository.existsByIdentification(potentialVoter.identification()),
                         userRepository.isActiveById(potentialVoter.assignedLeaderId()),
@@ -41,7 +41,8 @@ public class PotentialVoterUseCase {
                         return Mono.error(new NotFoundException(MessageError.NO_VOTING_TABLE_FOUND));
                     }
                     return potentialVoterRepository.save(potentialVoter);
-                });
+                })
+                .flatMap(this::findDetails);
     }
 
     public Mono<PageResult<PotentialVoterDetails>> getAllPotentialVoters(
@@ -50,7 +51,7 @@ public class PotentialVoterUseCase {
                 .flatMap(potentialVoterQueryRepository::findAllWithVotingLocation);
     }
 
-    public Mono<PotentialVoter> updatePotentialVoter(
+    public Mono<PotentialVoterDetails> updatePotentialVoter(
             UUID id, PotentialVoter potentialVoter, UUID authenticatedUserId) {
         return potentialVoterRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException(MessageError.NO_POTENTIAL_VOTER_FOUND)))
@@ -68,6 +69,13 @@ public class PotentialVoterUseCase {
                             .assignedLeaderId(existing.assignedLeaderId())
                             .build();
                     return potentialVoterRepository.save(updated);
-                        }))));
+                        }))))
+                .flatMap(this::findDetails);
+    }
+
+    private Mono<PotentialVoterDetails> findDetails(PotentialVoter potentialVoter) {
+        return potentialVoterQueryRepository.findByIdWithVotingLocation(potentialVoter.id())
+                .switchIfEmpty(Mono.error(
+                        new NotFoundException(MessageError.NO_POTENTIAL_VOTER_FOUND)));
     }
 }

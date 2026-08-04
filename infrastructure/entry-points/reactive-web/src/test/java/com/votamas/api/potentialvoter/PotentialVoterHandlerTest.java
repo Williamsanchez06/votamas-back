@@ -8,6 +8,7 @@ import com.votamas.api.potentialvoter.config.PotentialVoterExportProperties;
 import com.votamas.api.potentialvoter.handlers.PotentialVoterHandler;
 import com.votamas.api.potentialvoter.mappers.PotentialVoterMapper;
 import com.votamas.model.potentialvoter.PotentialVoter;
+import com.votamas.model.potentialvoter.PotentialVoterDetails;
 import com.votamas.usecase.potentialvoter.ExportPotentialVotersUseCase;
 import com.votamas.usecase.potentialvoter.ImportPotentialVotersUseCase;
 import com.votamas.usecase.potentialvoter.PotentialVoterUseCase;
@@ -40,7 +41,13 @@ class PotentialVoterHandlerTest {
         when(validator.body(request, PotentialVoterCreateRequestDTO.class)).thenReturn(Mono.just(requestDto));
         when(userIdResolver.resolve(request)).thenReturn(Mono.just(authenticatedUserId));
         when(voterUseCase.savePotentialVoter(org.mockito.ArgumentMatchers.any()))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+                .thenReturn(Mono.just(PotentialVoterDetails.builder()
+                        .id(UUID.randomUUID())
+                        .identification(requestDto.identification())
+                        .firstName(requestDto.firstName())
+                        .lastName(requestDto.lastName())
+                        .assignedLeaderName("Laura Gómez")
+                        .build()));
         var handler = new PotentialVoterHandler(voterUseCase, validator,
                 mock(PotentialVoterImportRequestExtractor.class),
                 mock(ImportPotentialVotersUseCase.class),
