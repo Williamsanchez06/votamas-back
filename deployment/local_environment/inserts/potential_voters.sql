@@ -1,16 +1,16 @@
-INSERT INTO vota_mas.potential_voters (identification,
-                                       first_name,
-                                       last_name,
-                                       voting_table_id,
-                                       assigned_leader_id)
-VALUES ('1000000001',
-        'Carlos',
-        'Ramirez',
-        (SELECT vt.voting_table_id
-         FROM vota_mas.voting_tables vt
-                  JOIN vota_mas.polling_places pp ON pp.polling_place_id = vt.polling_place_id
-                  JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id
-         WHERE vz.name = 'ZONA 01'
-           AND pp.name = '01 - COL SAN JOSE SEDE MERCEDES ABREGO'
-           AND vt.table_number = 35),
-        '121e1766-2d53-4f3d-a1e1-8b72f3285e16') ON CONFLICT (identification) DO NOTHING;
+-- INSERT INTO vota_mas.potential_voters (identification,
+--                                        first_name,
+--                                        last_name,
+--                                        voting_table_id,
+--                                        assigned_leader_id)
+-- VALUES ('1000000001',
+--         'Carlos',
+--         'Ramirez',
+--         (SELECT vt.voting_table_id
+--          FROM vota_mas.voting_tables vt
+--                   JOIN vota_mas.polling_places pp ON pp.polling_place_id = vt.polling_place_id
+--                   JOIN vota_mas.voting_zones vz ON vz.voting_zone_id = pp.voting_zone_id
+--          WHERE vz.name = 'ZONA 01'
+--            AND pp.name = '01 - COL SAN JOSE SEDE MERCEDES ABREGO'
+--            AND vt.table_number = 35),
+--         '121e1766-2d53-4f3d-a1e1-8b72f3285e16') ON CONFLICT (identification) DO NOTHING;
