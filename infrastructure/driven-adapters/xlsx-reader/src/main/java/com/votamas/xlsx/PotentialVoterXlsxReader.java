@@ -33,12 +33,23 @@ public class PotentialVoterXlsxReader implements PotentialVoterSpreadsheetReader
     private static final String IDENTIFICATION = "identificacion";
     private static final String FIRST_NAME = "nombres";
     private static final String LAST_NAME = "apellidos";
-    private static final String VOTING_ZONE = "comuna";
+    private static final String VOTING_ZONE = "zona";
     private static final String POLLING_PLACE = "lugar de votacion";
     private static final String TABLE_NUMBER = "mesa de votacion";
+    private static final int MAX_HEADER_SEARCH_ROWS = 20;
     private static final Set<String> REQUIRED_HEADERS = Set.of(
             IDENTIFICATION, FIRST_NAME, LAST_NAME, VOTING_ZONE,
             POLLING_PLACE, TABLE_NUMBER);
+    private static final Map<String, String> HEADER_ALIASES = Map.ofEntries(
+            Map.entry(IDENTIFICATION, IDENTIFICATION),
+            Map.entry(FIRST_NAME, FIRST_NAME),
+            Map.entry(LAST_NAME, LAST_NAME),
+            Map.entry(VOTING_ZONE, VOTING_ZONE),
+            Map.entry("comuna", VOTING_ZONE),
+            Map.entry(POLLING_PLACE, POLLING_PLACE),
+            Map.entry("puesto de votacion", POLLING_PLACE),
+            Map.entry(TABLE_NUMBER, TABLE_NUMBER),
+            Map.entry("mesa", TABLE_NUMBER));
 
     private final int maxRows;
 
@@ -61,17 +72,11 @@ public class PotentialVoterXlsxReader implements PotentialVoterSpreadsheetReader
                 throw new ValidationException(MessageError.INVALID_SPREADSHEET);
             }
             Sheet sheet = workbook.getSheetAt(0);
-            Row headerRow = sheet.getRow(sheet.getFirstRowNum());
-            if (headerRow == null) {
-                throw new ValidationException(MessageError.MISSING_SPREADSHEET_HEADERS);
-            }
-
             DataFormatter formatter = new DataFormatter(Locale.ROOT);
             FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-            Map<String, Integer> columns = columns(headerRow, formatter, evaluator);
-            if (!columns.keySet().containsAll(REQUIRED_HEADERS)) {
-                throw new ValidationException(MessageError.MISSING_SPREADSHEET_HEADERS);
-            }
+            SpreadsheetHeader spreadsheetHeader = findHeader(sheet, formatter, evaluator);
+            Row headerRow = spreadsheetHeader.row();
+            Map<String, Integer> columns = spreadsheetHeader.columns();
 
             List<PotentialVoterImportRow> rows = new ArrayList<>();
             int skippedRows = 0;
@@ -104,13 +109,31 @@ public class PotentialVoterXlsxReader implements PotentialVoterSpreadsheetReader
 
     private Map<String, Integer> columns(Row row, DataFormatter formatter, FormulaEvaluator evaluator) {
         Map<String, Integer> columns = new LinkedHashMap<>();
+        if (row == null) {
+            return columns;
+        }
         for (Cell cell : row) {
             String header = normalizeHeader(formatter.formatCellValue(cell, evaluator));
-            if (!header.isBlank()) {
-                columns.putIfAbsent(header, cell.getColumnIndex());
+            String canonicalHeader = HEADER_ALIASES.get(header);
+            if (canonicalHeader != null) {
+                columns.putIfAbsent(canonicalHeader, cell.getColumnIndex());
             }
         }
         return columns;
+    }
+
+    private SpreadsheetHeader findHeader(Sheet sheet, DataFormatter formatter,
+                                          FormulaEvaluator evaluator) {
+        int firstRow = sheet.getFirstRowNum();
+        int lastRow = Math.min(sheet.getLastRowNum(), firstRow + MAX_HEADER_SEARCH_ROWS - 1);
+        for (int rowIndex = firstRow; rowIndex <= lastRow; rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
+            Map<String, Integer> columns = columns(row, formatter, evaluator);
+            if (columns.keySet().containsAll(REQUIRED_HEADERS)) {
+                return new SpreadsheetHeader(row, columns);
+            }
+        }
+        throw new ValidationException(MessageError.MISSING_SPREADSHEET_HEADERS);
     }
 
     private boolean isEmpty(Row row, Iterable<Integer> columns, DataFormatter formatter,
@@ -140,5 +163,8 @@ public class PotentialVoterXlsxReader implements PotentialVoterSpreadsheetReader
                 .trim()
                 .toLowerCase(Locale.ROOT);
         return normalized.replaceAll("\\s+", " ");
+    }
+
+    private record SpreadsheetHeader(Row row, Map<String, Integer> columns) {
     }
 }

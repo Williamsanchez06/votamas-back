@@ -424,7 +424,7 @@
                 {
                   "key": "votingZoneId",
                   "value": "{{votingZoneId}}",
-                  "description": "UUID de la zona o comuna.",
+                  "description": "UUID de la zona.",
                   "disabled": true
                 },
                 {

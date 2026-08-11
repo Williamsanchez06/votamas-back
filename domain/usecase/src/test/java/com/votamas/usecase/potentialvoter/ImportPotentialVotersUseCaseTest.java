@@ -50,10 +50,10 @@ class ImportPotentialVotersUseCaseTest {
     @Test
     void shouldImportValidRowsAndResolveRepeatedTableOnce() {
         when(reader.read(any())).thenReturn(Mono.just(new PotentialVoterImportData(List.of(
-                row(2, "100", "Comuna 1", "Colegio", "12"),
-                row(3, "101", " comuna 1 ", " colegio ", "12")), 1)));
+                row(2, "100", "Zona 1", "Colegio", "12"),
+                row(3, "101", " zona 1 ", " colegio ", "12")), 1)));
         when(locationRepository.findAllVotingTableReferences()).thenReturn(Flux.just(
-                new VotingTableReference(tableId, "Comuna 1", "Colegio", 12)));
+                new VotingTableReference(tableId, "Zona 1", "Colegio", 12)));
         when(voterRepository.save(any())).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(useCase.execute(new byte[]{1}, leaderId))
@@ -72,7 +72,7 @@ class ImportPotentialVotersUseCaseTest {
     @Test
     void shouldReportMissingTableWithoutSaving() {
         when(reader.read(any())).thenReturn(Mono.just(new PotentialVoterImportData(
-                List.of(row(8, "100", "Comuna 1", "Colegio", "12")), 0)));
+                List.of(row(8, "100", "Zona 1", "Colegio", "12")), 0)));
 
         StepVerifier.create(useCase.execute(new byte[]{1}, leaderId))
                 .assertNext(result -> {
@@ -98,8 +98,8 @@ class ImportPotentialVotersUseCaseTest {
     @Test
     void shouldReportExistingAndFileDuplicateIdentifications() {
         when(reader.read(any())).thenReturn(Mono.just(new PotentialVoterImportData(List.of(
-                row(2, "100", "Comuna 1", "Colegio", "12"),
-                row(3, "100", "Comuna 1", "Colegio", "12")), 0)));
+                row(2, "100", "Zona 1", "Colegio", "12"),
+                row(3, "100", "Zona 1", "Colegio", "12")), 0)));
         when(voterRepository.findExistingIdentifications(any())).thenReturn(Flux.just("100"));
 
         StepVerifier.create(useCase.execute(new byte[]{1}, leaderId))
@@ -117,9 +117,9 @@ class ImportPotentialVotersUseCaseTest {
     void shouldContinueWithValidRowsWhenOtherRowsAreInvalid() {
         when(reader.read(any())).thenReturn(Mono.just(new PotentialVoterImportData(List.of(
                 row(2, "", "", "", "0"),
-                row(3, "101", "Comuna 1", "Colegio", "12")), 0)));
+                row(3, "101", "Zona 1", "Colegio", "12")), 0)));
         when(locationRepository.findAllVotingTableReferences()).thenReturn(Flux.just(
-                new VotingTableReference(tableId, "Comuna 1", "Colegio", 12)));
+                new VotingTableReference(tableId, "Zona 1", "Colegio", 12)));
         when(voterRepository.save(any())).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(useCase.execute(new byte[]{1}, leaderId))

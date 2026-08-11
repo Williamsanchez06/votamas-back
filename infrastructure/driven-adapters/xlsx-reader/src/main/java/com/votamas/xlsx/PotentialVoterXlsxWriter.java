@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class PotentialVoterXlsxWriter implements PotentialVoterSpreadsheetWriter {
     private static final String[] HEADERS = {
-            "Identificación", "Nombres", "Apellidos", "Comuna", "Lugar de votación",
+            "Identificación", "Nombres", "Apellidos", "Zona", "Lugar de votación",
             "Mesa", "Fecha de registro", "Líder asignado"
     };
     private static final int MAX_COLUMN_WIDTH = 50 * 256;

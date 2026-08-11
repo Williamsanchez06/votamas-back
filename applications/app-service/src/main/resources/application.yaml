@@ -26,14 +26,14 @@ adapters:
     database: ${DB_NAME:votamas}
     schema: ${DB_SCHEMA:vota_mas}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:12345}
+    password: ${DB_PASSWORD}
     ssl: ${DB_SSL:false}
     initial-size: ${DB_POOL_INITIAL_SIZE:0}
     max-size: ${DB_POOL_MAX_SIZE:5}
     max-idle-time-minutes: ${DB_POOL_MAX_IDLE_MINUTES:5}
     max-acquire-time-seconds: ${DB_POOL_ACQUIRE_TIMEOUT_SECONDS:10}
 jwt:
-  secret: ${JWT_SECRET:hh_clave_super_william_de_reppppp_32_232DFE}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION_MS:900000}
   issuer: ${JWT_ISSUER:votamas-api}
 entries:

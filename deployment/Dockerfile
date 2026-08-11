@@ -1,7 +1,24 @@
-FROM eclipse-temurin:21-jdk-alpine
-VOLUME /tmp
-COPY *.jar votamas.jar
-ENV JAVA_OPTS=" -Xshareclasses:name=cacheapp,cacheDir=/cache,nonfatal -XX:+UseContainerSupport -XX:MaxRAMPercentage=70 -Djava.security.egd=file:/dev/./urandom"
-# Replace with a non-root user to avoid running the container with excessive privileges
-USER appuser
-ENTRYPOINT [ "/bin/sh", "-c", "/opt/java/openjdk/bin/java $JAVA_OPTS  -jar /votamas.jar" ]
+FROM eclipse-temurin:21-jdk-alpine AS builder
+
+WORKDIR /workspace
+COPY . .
+
+RUN chmod +x ./gradlew \
+    && ./gradlew :app-service:bootJar -x test --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine
+
+RUN addgroup -S votamas \
+    && adduser -S votamas -G votamas
+
+WORKDIR /app
+
+COPY --from=builder \
+    /workspace/applications/app-service/build/libs/votamas.jar \
+    /app/votamas.jar
+
+USER votamas
+
+EXPOSE 10000
+
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/votamas.jar"]

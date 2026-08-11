@@ -334,3 +334,8 @@ gradle-app.setting
 # -----
 *.hprof
 build-cache
+
+# Environment secrets
+.env
+.env.*
+!.env.example

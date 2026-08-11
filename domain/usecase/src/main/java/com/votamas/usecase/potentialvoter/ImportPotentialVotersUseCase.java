@@ -126,7 +126,7 @@ public class ImportPotentialVotersUseCase {
 
     private PotentialVoterImportError tableNotFound(PotentialVoterImportRow source, NormalizedRow row,
                                                      int tableNumber) {
-        String message = "No se encontró la mesa %d para el lugar de votación \"%s\" en la comuna \"%s\""
+        String message = "No se encontró la mesa %d para el lugar de votación \"%s\" en la zona \"%s\""
                 .formatted(tableNumber, row.pollingPlaceName(), row.votingZoneName());
         return error(source, row.identification(), message);
     }
@@ -140,7 +140,7 @@ public class ImportPotentialVotersUseCase {
         max(row.firstName(), MAX_NAME_LENGTH, "El nombre no puede superar 150 caracteres", errors);
         required(row.lastName(), "El apellido es obligatorio", errors);
         max(row.lastName(), MAX_NAME_LENGTH, "El apellido no puede superar 150 caracteres", errors);
-        required(row.votingZoneName(), "La comuna es obligatoria", errors);
+        required(row.votingZoneName(), "La zona es obligatoria", errors);
         required(row.pollingPlaceName(), "El lugar de votación es obligatorio", errors);
         required(row.tableNumber(), "La mesa de votación es obligatoria", errors);
         if (!row.tableNumber().isBlank()) {
